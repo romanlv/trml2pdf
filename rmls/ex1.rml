@@ -1,0 +1,11 @@
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document filename="example_1.pdf">
+<stylesheet>
+</stylesheet>
+<pageDrawing>
+	 <drawCentredString x="4.1in" y="5.8in">
+		   Hello World.
+	 </drawCentredString>
+</pageDrawing>
+</document>
+

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document filename="example_4.pdf">
+<template>
+	 <pageTemplate id="main">
+		<pageGraphics>
+		<fill color="(0.04,0.28,0.56)"/>
+		<stroke color="(0.23,0.15,0.40)"/>
+		<path x="23mm" y="10mm" close="no" fill="yes" stroke="yes">
+			5mm 10mm 5mm 292mm 23mm 292mm
+			<moveto>
+				23mm 281mm
+			</moveto>
+			23mm 194mm 116mm 194mm 116mm 184mm 23mm 184mm 23mm 141mm
+			72mm 141mm 72mm 131mm 23mm 131mm 23mm 31mm
+		</path>
+		<path x="5mm" y="281mm" close="no" fill="yes" stroke="yes">
+			5mm 292mm 204mm 292mm 204mm 281mm
+			<moveto>
+				195mm 281mm
+			</moveto>
+			150mm 281mm 143mm 273mm 72mm 273mm 64mm 281mm 23mm 281mm
+		</path>
+		<path x="195mm" y="292mm" close="no" fill="yes" stroke="yes">
+			204mm 292mm 204mm 10mm 195mm 10mm
+			<moveto>
+				195mm 31mm
+			</moveto>
+			195mm 73mm 110mm 73mm 110mm 83mm 195mm 83mm 195mm 131mm
+			110mm 131mm 110mm 141mm 195mm 141mm 195mm 281mm
+		</path>
+		<path x="5mm" y="31mm" close="no" fill="yes" stroke="yes">
+			5mm 10mm 204mm 10mm 204mm 31mm
+			<moveto>
+				195mm 31mm
+			</moveto>
+			23mm 31mm
+		</path>
+		<fill color="(0.86,0.91,0.95)"/>
+		<path x="110mm" y="73mm" close="yes" fill="yes" stroke="yes">
+			110mm 37mm 195mm 37mm 195mm 73mm
+		</path>
+		<path x="110mm" y="131mm" close="yes" fill="yes" stroke="yes">
+			110mm 95mm 195mm 95mm 195mm 131mm
+		</path>
+		<fill color="white"/>
+		<setFont name="Helvetica" size="18"/>
+		<drawCentredString x="107mm" y="275mm">Auction-in-Europe.com</drawCentredString>
+		<setFont name="Helvetica" size="9"/>
+		<drawString x="23mm" y="26mm">Tiny sprl</drawString>
+		<drawString x="23mm" y="22mm">Tel: +32.10.68.94.39</drawString>
+		<drawString x="23mm" y="18mm">Fax: +32.10.68.94.39</drawString>
+		<drawString x="23mm" y="14mm">Email: fp@tiny.be</drawString>
+		<drawRightString x="195mm" y="26mm">Rue Joseph Mathieu, 28</drawRightString>
+		<drawRightString x="195mm" y="22mm">B-1300 Limal</drawRightString>
+		<drawRightString x="195mm" y="18mm">TVA: BE.477.472.701</drawRightString>
+		<drawRightString x="195mm" y="14mm">R.C.N. 95636</drawRightString>
+		<image file="pict/logo.png" x="90mm" y="15mm"/>
+		<image file="pict/screenshot.jpg" x="28mm" y="196mm"/>
+
+		<setFont name="Helvetica" size="14"/>
+		<drawCentredString x="71mm" y="187mm">Un concept efficace</drawCentredString>
+		<drawCentredString x="48mm" y="134mm">Leader en Belgique</drawCentredString>
+		<drawCentredString x="153mm" y="134mm">Gestion des sites marchands</drawCentredString>
+		<drawCentredString x="153mm" y="76mm">Des services uniques</drawCentredString>
+		</pageGraphics>
+		<fill color="black"/>
+		<frame id="first" x1="110mm" y1="190mm" width="80mm" height="80mm"/>
+		<frame id="second" x1="27mm" y1="139mm" width="163mm" height="42mm"/>
+		<frame id="trois" x1="27mm" y1="37mm" width="75mm" height="90mm"/>
+		<frame id="quatre" x1="112mm" y1="96mm" width="82mm" height="34mm"/>
+		<frame id="cinq" x1="112mm" y1="36mm" width="82mm" height="37mm"/>
+	</pageTemplate>
+</template>
+<stylesheet>
+	<paraStyle name="bigurl" fontName="Courier-Bold" fontSize="12" spaceBefore="0.5cm" textColor="red"/>
+	<paraStyle name="description" fontName="Helvetica-Oblique" fontSize="12" spaceBefore="0.2cm" spaceAfter="0.7" textColor="black" alignment="right"/>
+	<paraStyle name="small" fontName="Helvetica" fontSize="8" alignment="justify"/>
+	<paraStyle name="subtitle" fontName="Courier-Bold" fontSize="10" spaceBefore="5mm" spaceAfter="2mm" />
+	<paraStyle name="data" fontName="Helvetica" fontSize="10"/>
+	<paraStyle name="footnote" fontName="Helvetica" fontSize="8" alignment="center" spaceBefore="3mm"/>
+	<paraStyle name="centered" fontName="Helvetica-Oblique" fontSize="10" alignment="center"/>
+	<paraStyle name="bullet" fontName="Helvetica" fontSize="10" leftIndent="10mm" firstLineIndent="-10mm"/>
+</stylesheet>
+<story>
+	<spacer length="0.8cm"/>
+	<para style="bigurl">http://art-in-europe.com</para>
+	<para style="description">Artistes et galeries d'art</para>
+	<para style="bigurl">http://antique-in-europe.com</para>
+	<para style="description">Antiquaires</para>
+	<para style="bigurl">http://auction-in-europe.com</para>
+	<para style="description">Salles de ventes publiques</para>
+	<nextFrame/>
+	<para style="small">
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+		Depuis toujours nos sites sont en avance sur leur temps.
+	</para>
+	<nextFrame/>
+	<para style="subtitle">Base de donnee</para>
+	<para style="data">90.000 oeuvres, 23.000 photos</para>
+	<para style="data">300 artistes contemporains</para>
+	<para style="data">8.000 objets a vendre par mois</para>
+	<para style="data">250 ventes directes/mois</para>
+	<para style="subtitle">Base de donnee</para>
+	<para style="data">90.000 oeuvres, 23.000 photos</para>
+	<para style="data">300 artistes contemporains</para>
+	<para style="data">8.000 objets a vendre par mois</para>
+	<para style="data">250 ventes directes/mois</para>
+	<para style="subtitle">Base de donnee</para>
+	<para style="data">90.000 oeuvres, 23.000 photos</para>
+	<para style="data">8.000 objets a vendre par mois</para>
+	<para style="data">250 ventes directes/mois</para>
+	<para style="footnote">(*) chiffres calcules le 12/12/2003</para>
+	<nextFrame/>
+	<para style="centered">
+	Flagey.com, ArthusGallery.com, Ferraton.be, python.org
+	Flagey.com, Zope.org, Ferraton.be, Debian.org
+	Flagey.com, Ferraton.be, Google.com
+	Flagey.com, Google.be, Ferraton.be,
+	Flagey.com, ArthusGallery.com, Ferraton.be,
+	Flagey.com, ArthusGallery.com, Ferraton.be, python.org
+	Flagey.com, Zope.org, Debian.org
+	</para>
+	<nextFrame/>
+	<para style="bullet">- Test des bullets fds fkldsjf dslksfdjmlsfd fdsjhdkj kljsfd lmsfd jsfmdlk j jsdhks djhskls djfk.</para>
+	<para style="bullet">- Test des bullets kljsfd lmsfd jsfmdlk j jsdhks djhskls djfk.</para>
+	<para style="bullet">- Test des bullets</para>
+	<para style="footnote">(*) chiffres calcules le 12/12/2003</para>
+</story>
+</document>
+
