@@ -295,16 +295,37 @@ class _rml_canvas(object):
         for tag in ('width','height','x','y'):
             if node.hasAttribute(tag):
                 args[tag] = utils.unit_get(node.getAttribute(tag))
+                
+        if node.hasAttribute("preserveAspectRatio"):
+            args["preserveAspectRatio"] = True
         if ('width' in args) and (not 'height' in args):
             args['height'] = sy * args['width'] / sx
         elif ('height' in args) and (not 'width' in args):
             args['width'] = sx * args['height'] / sy
-        elif ('width' in args) and ('height' in args):
+        elif ('width' in args) and ('height' in args) and (not args.get("preserveAspectRatio", False)):
             if (float(args['width'])/args['height'])>(float(sx)>sy):
                 args['width'] = sx * args['height'] / sy
             else:
                 args['height'] = sy * args['width'] / sx
         self.canvas.drawImage(img, **args)
+        
+    def _barcode(self, node):
+        from reportlab.graphics.barcode import code128
+        
+        createargs = {}
+        drawargs = {}
+        
+        for tag in ('x', 'y'):
+        	if node.hasAttribute(tag):
+        		drawargs[tag] = utils.unit_get(node.getAttribute(tag))
+        		
+        for tag in ('barWidth', 'barHeight'):
+        	if node.hasAttribute(tag):
+        		createargs[tag] = utils.unit_get(node.getAttribute(tag))
+        		
+        barcode = code128.Code128(self._textual(node), **createargs)
+        
+        barcode.drawOn(self.canvas, **drawargs)
 
     def _path(self, node):
         self.path = self.canvas.beginPath()
@@ -334,6 +355,7 @@ class _rml_canvas(object):
     def render(self, node):
         tags = {
             'drawCentredString': self._drawCenteredString,
+            'drawCenteredString': self._drawCenteredString,
             'drawRightString': self._drawRightString,
             'drawString': self._drawString,
             'rect': self._rect,
@@ -350,7 +372,8 @@ class _rml_canvas(object):
             'path': self._path,
             'rotate': lambda node: self.canvas.rotate(float(node.getAttribute('degrees'))),
             'translate': self._translate,
-            'image': self._image
+            'image': self._image,
+            'barCode': self._barcode,
         }
         for nd in node.childNodes:
             if nd.nodeType==nd.ELEMENT_NODE:
@@ -477,7 +500,7 @@ class _rml_flowable(object):
             style = styles['Heading3']
             return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText':'str'})))
         elif node.localName=='image':
-            return platypus.Image(node.getAttribute('file'), mask=(250,255,250,255,250,255), **(utils.attr_get(node, ['width','height'])))
+            return platypus.Image(node.getAttribute('file'), mask=(250,255,250,255,250,255), **(utils.attr_get(node, ['width','height', 'preserveAspectRatio', 'anchor'])))
         elif node.localName=='spacer':
             if node.hasAttribute('width'):
                 width = utils.unit_get(node.getAttribute('width'))
@@ -485,6 +508,8 @@ class _rml_flowable(object):
                 width = utils.unit_get('1cm')
             length = utils.unit_get(node.getAttribute('length'))
             return platypus.Spacer(width=width, height=length)
+        elif node.localName=='barCode':
+        	return code39.Extended39(self._textual(node))
         elif node.localName=='pageBreak':
             return platypus.PageBreak()
         elif node.localName=='condPageBreak':
@@ -516,7 +541,7 @@ class _rml_template(object):
             ps = map(lambda x:x.strip(), node.getAttribute('pageSize').replace(')', '').replace('(', '').split(','))
             pageSize = ( utils.unit_get(ps[0]),utils.unit_get(ps[1]) )
         cm = reportlab.lib.units.cm
-        self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=pageSize, **utils.attr_get(node, ['leftMargin','rightMargin','topMargin','bottomMargin'], {'allowSplitting':'int','showBoundary':'bool','title':'str','author':'str'}))
+        self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=pageSize, **utils.attr_get(node, ['leftMargin','rightMargin','topMargin','bottomMargin'], {'allowSplitting':'int','showBoundary':'bool','title':'str','author':'str', 'rotation':'int'}))
         self.page_templates = []
         self.styles = doc.styles
         self.doc = doc
