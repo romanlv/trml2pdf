@@ -4,15 +4,18 @@ Open source implemenaton of RML (Report Markup Language) from ReportLab
 
 Not all tags are supported, but most of them work.
  
+Install
+------- 
+ pip install git+https://github.com/romanlv/trml2pdf.git
+
+*note* pypi registered `trml2pdf` module is not connected to this repo yet, hopefully it will be fixed soon
+
 
 Examples
 --------
 
 Create a PDF file:
 
-trml2pdf <input.rml
-
-Use it as a python module:
 ```python
 import trml2pdf
 print trml2pdf.parseString(file('file.rml','r').read())
