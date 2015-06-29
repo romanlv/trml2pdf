@@ -294,6 +294,8 @@ class _rml_canvas(object):
         args = {}
         for tag in ('width','height','x','y'):
             if node.hasAttribute(tag):
+                if not utils.unit_get(node.getAttribute(tag)):
+                    continue
                 args[tag] = utils.unit_get(node.getAttribute(tag))
                 
         if node.hasAttribute("preserveAspectRatio"):
