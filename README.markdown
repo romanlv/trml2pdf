@@ -6,7 +6,7 @@ Not all tags are supported, but most of them work.
  
 Install
 ------- 
- pip install git+https://github.com/romanlv/trml2pdf.git
+`pip install git+https://github.com/romanlv/trml2pdf.git`
 
 *note* pypi registered `trml2pdf` module is not connected to this repo yet, hopefully it will be fixed soon
 
