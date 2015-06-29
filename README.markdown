@@ -14,8 +14,20 @@ trml2pdf <input.rml
 
 Use it as a python module:
 ```python
-	import trml2pdf
-	print trml2pdf.parseString(file('file.rml','r').read())
+import trml2pdf
+print trml2pdf.parseString(file('file.rml','r').read())
 ```
  
-If you are using this for Django you can simply mark up an .rml file with the template system and then render it.
+If you are using this for Django you can dynamically create an .rml file with the template system and then render it.
+
+
+```python
+from django.template.loader import get_template
+from django.template.context import Context
+
+data = {'key1': 'foo'}
+template = get_template('template.rml')
+context = Context(data)
+xmlstring = template.render(context)
+pdfstr = trml2pdf.parseString(xmlstring)
+```
