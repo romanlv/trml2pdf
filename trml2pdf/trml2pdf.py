@@ -22,7 +22,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
-import StringIO
+import io
 import xml.dom.minidom
 import copy
 
@@ -30,8 +30,8 @@ import reportlab
 from reportlab.pdfgen import canvas
 from reportlab import platypus
 
-import utils
-import color
+from . import utils
+from . import color
 
 #
 # Change this to UTF-8 if you plan tu use Reportlab's UTF-8 support
@@ -262,7 +262,7 @@ class _rml_canvas(object):
                 flow.drawOn(self.canvas,infos['x'],infos['y'])
                 infos['height']-=h
             else:
-                raise ValueError, "Not enough space"
+                raise ValueError("Not enough space")
 
     def _line_mode(self, node):
         ljoin = {'round':1, 'mitered':0, 'bevelled':2}
@@ -282,10 +282,10 @@ class _rml_canvas(object):
             self.canvas.setDash(node.getAttribute('dash').split(','))
 
     def _image(self, node):
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         from reportlab.lib.utils import ImageReader
-        u = urllib.urlopen(str(node.getAttribute('file')))
-        s = StringIO.StringIO()
+        u = urllib.request.urlopen(str(node.getAttribute('file')))
+        s = io.StringIO()
         s.write(u.read())
         s.seek(0)
         img = ImageReader(s)
@@ -540,7 +540,7 @@ class _rml_template(object):
         if not node.hasAttribute('pageSize'):
             pageSize = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
         else:
-            ps = map(lambda x:x.strip(), node.getAttribute('pageSize').replace(')', '').replace('(', '').split(','))
+            ps = [x.strip() for x in node.getAttribute('pageSize').replace(')', '').replace('(', '').split(',')]
             pageSize = ( utils.unit_get(ps[0]),utils.unit_get(ps[1]) )
         cm = reportlab.lib.units.cm
         self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=pageSize, **utils.attr_get(node, ['leftMargin','rightMargin','topMargin','bottomMargin'], {'allowSplitting':'int','showBoundary':'bool','title':'str','author':'str', 'rotation':'int'}))
@@ -574,23 +574,23 @@ def parseString(data, fout=None):
         fp.close()
         return fout
     else:
-        fp = StringIO.StringIO()
+        fp = io.StringIO()
         r.render(fp)
         return fp.getvalue()
 
 def trml2pdf_help():
-    print 'Usage: trml2pdf input.rml >output.pdf'
-    print 'Render the standard input (RML) and output a PDF file'
+    print('Usage: trml2pdf input.rml >output.pdf')
+    print('Render the standard input (RML) and output a PDF file')
     sys.exit(0)
 
 def main():
     if len(sys.argv)>1:
         if sys.argv[1]=='--help':
             trml2pdf_help()
-        print parseString(file(sys.argv[1], 'r').read()),
+        print(parseString(file(sys.argv[1], 'r').read()), end=' ')
     else:
-        print 'Usage: trml2pdf input.rml >output.pdf'
-        print 'Try \'trml2pdf --help\' for more information.'
+        print('Usage: trml2pdf input.rml >output.pdf')
+        print('Try \'trml2pdf --help\' for more information.')
 
 if __name__=="__main__":
     main()
