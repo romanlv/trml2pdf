@@ -285,7 +285,7 @@ class _rml_canvas(object):
         import urllib.request, urllib.parse, urllib.error
         from reportlab.lib.utils import ImageReader
         u = urllib.request.urlopen("file:" + str(node.getAttribute('file')))
-        s = io.StringIO()
+        s = io.BytesIO()
         s.write(u.read())
         s.seek(0)
         img = ImageReader(s)
