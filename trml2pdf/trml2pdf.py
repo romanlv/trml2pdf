@@ -569,7 +569,7 @@ class _rml_template(object):
 def parseString(data, fout=None):
     r = _rml_doc(data)
     if fout:
-        fp = file(fout,'wb')
+        fp = open(fout, "wb")
         r.render(fp)
         fp.close()
         return fout

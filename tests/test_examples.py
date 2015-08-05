@@ -24,13 +24,13 @@ class Test(unittest.TestCase):
             os.chdir( work_dir )
 
 
-    
+
     def _run_all_examples(self):
         for name in os.listdir('.'):
             if name.endswith(".rml"):
                 path = name #'{}/{}'.format(EXAMPLES_DIR, name)
                 # print 'running: {}'.format(path)
-                output = trml2pdf.parseString(file(path,'r').read())
+                output = trml2pdf.parseString(open(path,"r").read())
                 self.assertIsNotNone(output)
 
 
