@@ -574,7 +574,7 @@ def parseString(data, fout=None):
         fp.close()
         return fout
     else:
-        fp = io.StringIO()
+        fp = io.BytesIO()
         r.render(fp)
         return fp.getvalue()
 
