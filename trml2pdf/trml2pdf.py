@@ -284,7 +284,7 @@ class _rml_canvas(object):
     def _image(self, node):
         import urllib.request, urllib.parse, urllib.error
         from reportlab.lib.utils import ImageReader
-        u = urllib.request.urlopen(str(node.getAttribute('file')))
+        u = urllib.request.urlopen("file:" + str(node.getAttribute('file')))
         s = io.StringIO()
         s.write(u.read())
         s.seek(0)
@@ -297,7 +297,7 @@ class _rml_canvas(object):
                 # if not utils.unit_get(node.getAttribute(tag)):
                 #     continue
                 args[tag] = utils.unit_get(node.getAttribute(tag))
-                
+ 
         if node.hasAttribute("preserveAspectRatio"):
             args["preserveAspectRatio"] = True
         if ('width' in args) and (not 'height' in args):
