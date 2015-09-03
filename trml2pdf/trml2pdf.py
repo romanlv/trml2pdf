@@ -82,6 +82,9 @@ class _rml_styles(object):
                 style.__dict__[attr] = node.getAttribute(attr)
         for attr in ['fontSize', 'leftIndent', 'rightIndent', 'spaceBefore', 'spaceAfter', 'firstLineIndent', 'bulletIndent', 'bulletFontSize', 'leading']:
             if node.hasAttribute(attr):
+                if attr == 'fontSize' and not node.hasAttribute('leading'):
+                    style.__dict__['leading'] = utils.unit_get(
+                        node.getAttribute(attr)) * 1.2
                 style.__dict__[attr] = utils.unit_get(node.getAttribute(attr))
         if node.hasAttribute('alignment'):
             align = {
