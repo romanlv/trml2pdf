@@ -29,6 +29,7 @@ import xml.dom.minidom
 from reportlab import platypus
 import reportlab
 from reportlab.pdfgen import canvas
+from reportlab.platypus.para import Paragraph
 
 from . import color
 from . import utils
@@ -56,10 +57,14 @@ class _rml_styles(object):
         self.styles = {}
         self.names = {}
         self.table_styles = {}
+        self.list_styles = {}
         for node in nodes:
             for style in node.getElementsByTagName('blockTableStyle'):
                 self.table_styles[
                     style.getAttribute('id')] = self._table_style_get(style)
+            for style in node.getElementsByTagName('listStyle'):
+                self.list_styles[
+                    style.getAttribute('name')] = self._list_style_get(style)
             for style in node.getElementsByTagName('paraStyle'):
                 self.styles[
                     style.getAttribute('name')] = self._para_style_get(style)
@@ -79,6 +84,26 @@ class _rml_styles(object):
             if node.hasAttribute(attr):
                 style.__dict__[attr] = utils.unit_get(node.getAttribute(attr))
         if node.hasAttribute('alignment'):
+            align = {
+                'right': reportlab.lib.enums.TA_RIGHT,
+                'center': reportlab.lib.enums.TA_CENTER,
+                'justify': reportlab.lib.enums.TA_JUSTIFY
+            }
+            style.alignment = align.get(
+                node.getAttribute('alignment').lower(), reportlab.lib.enums.TA_LEFT)
+        return style
+
+    def _list_style_update(self, style, node):
+        for attr in ['bulletColor']:
+            if node.hasAttribute(attr):
+                style.__dict__[attr] = color.get(node.getAttribute(attr))
+        for attr in ['bulletType', 'bulletFontName', 'bulletDetent', 'bulletDir', 'bulletFormat', 'start']:
+            if node.hasAttribute(attr):
+                style.__dict__[attr] = node.getAttribute(attr)
+        for attr in ['leftIndent', 'rightIndent', 'bulletFontSize', 'bulletOffsetY']:
+            if node.hasAttribute(attr):
+                style.__dict__[attr] = utils.unit_get(node.getAttribute(attr))
+        if node.hasAttribute('bulletAlign'):
             align = {
                 'right': reportlab.lib.enums.TA_RIGHT,
                 'center': reportlab.lib.enums.TA_CENTER,
@@ -140,6 +165,18 @@ class _rml_styles(object):
                     styles.append(
                         (kind, start, stop, thick, color.get(node.getAttribute('colorName'))))
         return platypus.tables.TableStyle(styles)
+
+    def _list_style_get(self, node):
+        style = reportlab.lib.styles.ListStyle('Default')
+        if node.hasAttribute("parent"):
+            parent = node.getAttribute("parent")
+            parentStyle = self.styles.get(parent)
+            if not parentStyle:
+                raise Exception("parent style = '%s' not found" % parent)
+            style.__dict__.update(parentStyle.__dict__)
+            style.alignment = parentStyle.alignment
+        self._list_style_update(style, node)
+        return style
 
     def _para_style_get(self, node):
         styles = reportlab.lib.styles.getSampleStyleSheet()
@@ -262,7 +299,7 @@ class _rml_canvas(object):
 
     def _curves(self, node):
         line_str = utils.text_get(node).split()
-        lines = []
+
         while len(line_str) > 7:
             self.canvas.bezier(*[utils.unit_get(l) for l in line_str[0:8]])
             line_str = line_str[8:]
@@ -328,8 +365,7 @@ class _rml_canvas(object):
 
     def _image(self, node):
         import urllib.request
-        import urllib.parse
-        import urllib.error
+
         from reportlab.lib.utils import ImageReader
         u = urllib.request.urlopen("file:" + str(node.getAttribute('file')))
         s = io.BytesIO()
@@ -475,6 +511,32 @@ class _rml_flowable(object):
                 rc += n.toxml()
         return rc.encode(encoding)
 
+    def _list(self, node):
+        if node.hasAttribute('style'):
+            list_style = self.styles.list_styles[node.getAttribute('style')]
+        else:
+            list_style = platypus.flowables.ListStyle('Default')
+
+        list_items = []
+        for li in _child_get(node, 'li'):
+            flow = []
+            for n in li.childNodes:
+                if n.nodeType == node.ELEMENT_NODE:
+                    flow.append(self._flowable(n))
+            if not flow:
+                if li.hasAttribute('style'):
+                    li_style = self.styles.styles[
+                        li.getAttribute('style')]
+                else:
+                    li_style = reportlab.lib.styles.getSampleStyleSheet()[
+                        'Normal']
+                flow = Paragraph(
+                    str(self._textual(li), encoding='UTF-8'), li_style)
+            list_item = platypus.ListItem(flow)
+            list_items.append(list_item)
+
+        return platypus.ListFlowable(list_items, style=list_style, start=list_style.__dict__.get('start'))
+
     def _table(self, node):
         length = 0
         colwidths = None
@@ -583,6 +645,8 @@ class _rml_flowable(object):
             return platypus.NextPageTemplate(str(node.getAttribute('name')))
         elif node.localName == 'nextFrame':
             return platypus.CondPageBreak(1000)  # TODO: change the 1000 !
+        elif node.localName == 'ul':
+            return self._list(node)
         else:
             sys.stderr.write(
                 'Warning: flowable not yet implemented: %s !\n' % (node.localName,))
