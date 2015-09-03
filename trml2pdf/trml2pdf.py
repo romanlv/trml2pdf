@@ -402,20 +402,22 @@ class _rml_canvas(object):
 
         createargs = {}
         drawargs = {}
-
+        code_type = node.getAttribute('code')
         for tag in ('x', 'y'):
             if node.hasAttribute(tag):
                 drawargs[tag] = utils.unit_get(node.getAttribute(tag))
 
-        for tag in ('barWidth', 'barHeight'):
-            if node.hasAttribute(tag):
-                createargs[tag] = utils.unit_get(node.getAttribute(tag))
+        if code_type == 'Code128':
+            for tag in ('barWidth', 'barHeight'):
+                if node.hasAttribute(tag):
+                    createargs[tag] = utils.unit_get(node.getAttribute(tag))
+            barcode = code128.Code128(self._textual(node), **createargs)
+        elif code_type == "QR":
+            for tag in ('width', 'height'):
+                if node.hasAttribute(tag):
+                    createargs[tag] = utils.unit_get(node.getAttribute(tag))
+            barcode = qr.QrCode(node.getAttribute('value'), **createargs)
 
-        barcodeMapping = {
-            'Code128': code128.Code128(self._textual(node), **createargs),
-            'QR': qr.QrCode(self._textual(node), **createargs)
-        }
-        barcode = barcodeMapping[node.getAttribute('code')]
         barcode.drawOn(self.canvas, **drawargs)
 
     def _path(self, node):
