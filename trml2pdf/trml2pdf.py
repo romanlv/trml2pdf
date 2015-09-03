@@ -398,7 +398,7 @@ class _rml_canvas(object):
         self.canvas.drawImage(img, **args)
 
     def _barcode(self, node):
-        from reportlab.graphics.barcode import code128
+        from reportlab.graphics.barcode import code128, qr
 
         createargs = {}
         drawargs = {}
@@ -411,8 +411,11 @@ class _rml_canvas(object):
             if node.hasAttribute(tag):
                 createargs[tag] = utils.unit_get(node.getAttribute(tag))
 
-        barcode = code128.Code128(self._textual(node), **createargs)
-
+        barcodeMapping = {
+            'Code128': code128.Code128(self._textual(node), **createargs),
+            'QR': qr.QrCode(self._textual(node), **createargs)
+        }
+        barcode = barcodeMapping[node.getAttribute('code')]
         barcode.drawOn(self.canvas, **drawargs)
 
     def _path(self, node):
@@ -671,6 +674,7 @@ class _rml_template(object):
 
     def __init__(self, out, node, doc):
         if not node.hasAttribute('pageSize'):
+            print('Here')
             pageSize = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
         else:
             ps = [x.strip() for x in node.getAttribute('pageSize').replace(')', '').replace(
