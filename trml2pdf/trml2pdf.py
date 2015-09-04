@@ -367,7 +367,7 @@ class _rml_canvas(object):
             self.canvas.setDash(node.getAttribute('dash').split(','))
 
     def _image(self, node):
-        import urllib.request
+        from six.moves import urllib
 
         from reportlab.lib.utils import ImageReader
         u = urllib.request.urlopen("file:" + str(node.getAttribute('file')))
@@ -505,7 +505,7 @@ class _rml_flowable(object):
             if n.nodeType == node.ELEMENT_NODE:
                 if n.localName == 'getName':
                     newNode = self.doc.dom.createTextNode(
-                        self.styles.names.get(bytes(n.getAttribute('id'), 'UTF-8'), 'Unknown name'))
+                        self.styles.names.get(n.getAttribute('id'), 'Unknown name'))
                     node.insertBefore(newNode, n)
                     node.removeChild(n)
                 if n.localName == 'pageNumber':
@@ -733,7 +733,7 @@ def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == '--help':
             trml2pdf_help()
-        print(parseString(open(sys.argv[1], 'r').read()), end=' ')
+        print(parseString(open(sys.argv[1], 'r').read()))
     else:
         print('Usage: trml2pdf input.rml >output.pdf')
         print('Try \'trml2pdf --help\' for more information.')
