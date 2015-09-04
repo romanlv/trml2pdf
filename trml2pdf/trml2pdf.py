@@ -29,7 +29,6 @@ import xml.dom.minidom
 from reportlab import platypus
 import reportlab
 from reportlab.pdfgen import canvas
-from reportlab.platypus.para import Paragraph
 
 from . import color
 from . import utils
@@ -538,7 +537,7 @@ class _rml_flowable(object):
                 else:
                     li_style = reportlab.lib.styles.getSampleStyleSheet()[
                         'Normal']
-                flow = Paragraph(
+                flow = platypus.para.Paragraph(
                     str(self._textual(li), encoding='UTF-8'), li_style)
             list_item = platypus.ListItem(flow)
             list_items.append(list_item)
@@ -734,7 +733,7 @@ def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == '--help':
             trml2pdf_help()
-        print(parseString(file(sys.argv[1], 'r').read()), end=' ')
+        print(parseString(open(sys.argv[1], 'r').read()), end=' ')
     else:
         print('Usage: trml2pdf input.rml >output.pdf')
         print('Try \'trml2pdf --help\' for more information.')
