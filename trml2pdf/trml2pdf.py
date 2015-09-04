@@ -30,6 +30,8 @@ from reportlab import platypus
 import reportlab
 from reportlab.pdfgen import canvas
 
+from six import text_type
+
 from . import color
 from . import utils
 
@@ -504,7 +506,7 @@ class _rml_flowable(object):
             if n.nodeType == node.ELEMENT_NODE:
                 if n.localName == 'getName':
                     newNode = self.doc.dom.createTextNode(
-                        self.styles.names.get(n.getAttribute('id'), 'Unknown name'))
+                        self.styles.names.get(bytes(n.getAttribute('id'), 'UTF-8'), 'Unknown name'))
                     node.insertBefore(newNode, n)
                     node.removeChild(n)
                 if n.localName == 'pageNumber':
@@ -516,7 +518,7 @@ class _rml_flowable(object):
                 rc += n.data
             elif (n.nodeType == node.TEXT_NODE):
                 rc += n.toxml()
-        return rc.encode(encoding)
+        return text_type(rc.encode(encoding))
 
     def _list(self, node):
         if node.hasAttribute('style'):
@@ -675,7 +677,6 @@ class _rml_template(object):
 
     def __init__(self, out, node, doc):
         if not node.hasAttribute('pageSize'):
-            print('Here')
             pageSize = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
         else:
             ps = [x.strip() for x in node.getAttribute('pageSize').replace(')', '').replace(
