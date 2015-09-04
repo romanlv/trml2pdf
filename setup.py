@@ -1,9 +1,7 @@
-import os
-
 from setuptools import find_packages, setup
 
-# http://www.ewencp.org/blog/a-brief-introduction-to-packaging-python/
 
+# http://www.ewencp.org/blog/a-brief-introduction-to-packaging-python/
 setup(
     name='trml2pdf',
     version='0.2',

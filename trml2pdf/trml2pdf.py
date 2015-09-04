@@ -29,7 +29,6 @@ import xml.dom.minidom
 from reportlab import platypus
 import reportlab
 from reportlab.pdfgen import canvas
-
 from six import text_type
 
 from . import color
