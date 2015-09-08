@@ -16,7 +16,7 @@ The executable read a RML file to the standard input and output a PDF file to th
     maintainer='Roman Lyashov',
     maintainer_email='romitch@gmail.com',
     url='http://github.com/romanlv/trml2pdf/',
-    install_requires=['reportlab>=3.2.0'],
+    install_requires=['reportlab>=3.2.0', 'six>=1.9.0'],
     dependency_links=[],
     classifiers=[
         'Development Status :: 3 - Alpha',
