@@ -29,7 +29,6 @@ import xml.dom.minidom
 from reportlab import platypus
 import reportlab
 from reportlab.pdfgen import canvas
-from six import text_type
 
 from . import color
 from . import utils
@@ -517,7 +516,7 @@ class _rml_flowable(object):
                 rc += n.data
             elif (n.nodeType == node.TEXT_NODE):
                 rc += n.toxml()
-        return text_type(rc.encode(encoding))
+        return rc
 
     def _list(self, node):
         if node.hasAttribute('style'):
@@ -536,10 +535,10 @@ class _rml_flowable(object):
                     li_style = self.styles.styles[
                         li.getAttribute('style')]
                 else:
-                    li_style = reportlab.lib.styles.getSampleStyleSheet()[
-                        'Normal']
-                flow = platypus.para.Paragraph(
-                    str(self._textual(li), encoding='UTF-8'), li_style)
+                    li_style = reportlab.lib.styles.getSampleStyleSheet()['Normal']
+
+                flow = platypus.paragraph.Paragraph(self._textual(li), li_style)
+
             list_item = platypus.ListItem(flow)
             list_items.append(list_item)
 

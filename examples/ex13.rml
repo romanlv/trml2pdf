@@ -1,0 +1,46 @@
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="ex13.pdf">
+    <!-- Test For Lists and QR Codes -->
+    <template showBoundary="0" pageSize="(8.5in,11in)">
+        <pageTemplate id="main">
+            <pageGraphics>
+                <fill color="black"/>
+                <setFont name="Helvetica-Bold" size="16"/>
+                <drawRightString x="8in" y="10.2in">Header1</drawRightString>
+                <drawRightString x="8in" y="9.85in">Header2</drawRightString>
+                <rect x="1in" y="2.25in" height="3in" width="6.5in"/>
+                <barCode code="QR" x="6in" y="7.85in" value="www.google.com" height="2in" width="2in"/>
+            </pageGraphics>
+            <frame id="first" x1=".5in" y1=".5in" width="7.5in" height="8.75in"/>
+        </pageTemplate>
+    </template>
+    
+    <stylesheet>
+        <paraStyle name="body" fontName="Helvetica" fontSize="14"/>
+        <paraStyle name="additional_note" fontName="Helvetica-Bold" fontSize="15"/>
+        <paraStyle name="important_instruction" fontName="Helvetica-Bold" fontSize="10"/>
+        <listStyle name="bullet_list" bulletType='bullet' start='•' bulletFontSize='12'/>
+    </stylesheet>
+    
+    <story>
+        <h1>Section 1</h1>
+        <h3>Subheader 1</h3>
+        <ul style="bullet_list">
+            <li>List element 1</li>
+            <li>List element 2</li>
+            <li>List element 3</li>
+            <li style='important_instruction'>Styled list element.</li>
+        </ul>
+        <h3>Subheader 2</h3>
+        <ul style="bullet_list">
+            <li>List element 1</li>
+            <li>List element 2</li> 
+            <li>List element 3</li>
+            <li>List element 4</li>
+        </ul>
+        <para style="additional_note" spaceBefore=".2in">
+            <strong>Extra section</strong>
+        </para> 
+    </story>
+    
+</document>
