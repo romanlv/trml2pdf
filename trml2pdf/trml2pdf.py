@@ -711,7 +711,9 @@ class _rml_template(object):
 
 
 def parseString(data, fout=None):
-    r = _rml_doc(data)
+    import re
+    clean_data = re.sub('\t|\n|\r', '', data.strip())
+    r = _rml_doc(clean_data)
     if fout:
         fp = open(fout, "wb")
         r.render(fp)
