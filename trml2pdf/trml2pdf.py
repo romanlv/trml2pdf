@@ -516,7 +516,7 @@ class _rml_flowable(object):
                 rc += n.data
             elif (n.nodeType == node.TEXT_NODE):
                 rc += n.toxml()
-        return rc
+        return text_type(rc)
 
     def _list(self, node):
         if node.hasAttribute('style'):
