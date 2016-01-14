@@ -710,7 +710,7 @@ class _rml_template(object):
 
 
 def parseString(data, fout=None):
-    r = _rml_doc(data)
+    r = _rml_doc(data.strip())
     if fout:
         fp = open(fout, "wb")
         r.render(fp)
