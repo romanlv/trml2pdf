@@ -27,6 +27,7 @@ import sys
 import xml.dom.minidom
 
 from reportlab import platypus
+from reportlab.graphics.barcode import code39
 import reportlab
 from reportlab.pdfgen import canvas
 
