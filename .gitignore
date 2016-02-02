@@ -2,3 +2,5 @@
 .env/*
 dist/*
 *.egg-info/*
+.tox/*
+.results.txt

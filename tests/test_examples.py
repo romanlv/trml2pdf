@@ -6,7 +6,7 @@ from six import text_type
 import trml2pdf  # dev mode: python setup.py develop
 
 
-EXAMPLES_DIR = "../examples"
+EXAMPLES_DIR = "examples"
 
 
 # sys.path.append(EXAMPLES_DIR)
@@ -29,7 +29,8 @@ class Test(unittest.TestCase):
             if name.endswith(".rml"):
                 path = name  # '{}/{}'.format(EXAMPLES_DIR, name)
                 print('running: {}'.format(path))
-                output = trml2pdf.parseString(text_type(open(path, "r").read()))
+                with open(path, "r") as f:
+                    output = trml2pdf.parseString(text_type(f.read()))
                 self.assertIsNotNone(output)
 
 
