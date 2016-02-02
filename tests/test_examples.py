@@ -6,7 +6,7 @@ from six import text_type
 import trml2pdf  # dev mode: python setup.py develop
 
 
-EXAMPLES_DIR = "../examples"
+EXAMPLES_DIR = "examples"
 
 
 # sys.path.append(EXAMPLES_DIR)

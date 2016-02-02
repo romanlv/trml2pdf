@@ -1,0 +1,12 @@
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document filename="example_unicode.pdf">
+<stylesheet>
+</stylesheet>
+<pageDrawing>
+	 <drawCentredString x="4.1in" y="5.8in">
+		   Hello World.
+		   ӇЄԼԼƠ ƜƠƦԼƊ.
+	 </drawCentredString>
+</pageDrawing>
+</document>
+
