@@ -29,7 +29,8 @@ class Test(unittest.TestCase):
             if name.endswith(".rml"):
                 path = name  # '{}/{}'.format(EXAMPLES_DIR, name)
                 print('running: {}'.format(path))
-                output = trml2pdf.parseString(open(path, "r").read())
+                with open(path, "r") as f:
+                    output = trml2pdf.parseString(f.read())
                 self.assertIsNotNone(output)
 
 
