@@ -34,6 +34,7 @@ from reportlab.pdfgen import canvas
 from . import color
 from . import utils
 
+from six import text_type
 
 #
 # Change this to UTF-8 if you plan tu use Reportlab's UTF-8 support
