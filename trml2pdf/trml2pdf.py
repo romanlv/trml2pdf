@@ -654,6 +654,23 @@ class _rml_flowable(object):
             return platypus.CondPageBreak(1000)  # TODO: change the 1000 !
         elif node.localName == 'ul':
             return self._list(node)
+        elif node.localName == 'keepInFrame':
+            substory = self.render(node)
+            kwargs = {
+                "maxWidth": 0,
+                "maxHeight": 0,
+                "content": substory,
+            }
+            mode = node.getAttribute("onOverflow")
+            if mode:
+                kwargs["mode"] = mode
+            name = node.getAttribute("id")
+            if name:
+                kwargs["name"] = name
+            kwargs.update(
+                utils.attr_get(node, ['maxWidth','maxHeight', 'mergeSpace'],
+                               {'maxWidth': 'int','maxHeight': 'int'}))
+            return platypus.KeepInFrame(**kwargs)
         else:
             sys.stderr.write(
                 'Warning: flowable not yet implemented: %s !\n' % (node.localName,))
