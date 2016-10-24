@@ -5,3 +5,10 @@ dist/*
 .tox/*
 .results.txt
 *.orig
+*.log
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+*.bak

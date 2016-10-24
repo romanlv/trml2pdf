@@ -27,12 +27,14 @@ import sys
 import xml.dom.minidom
 
 from reportlab import platypus
+from reportlab.graphics.barcode import code39
 import reportlab
 from reportlab.pdfgen import canvas
 
 from . import color
 from . import utils
 
+from six import text_type
 
 #
 # Change this to UTF-8 if you plan tu use Reportlab's UTF-8 support
@@ -516,7 +518,7 @@ class _rml_flowable(object):
                 rc += n.data
             elif (n.nodeType == node.TEXT_NODE):
                 rc += n.toxml()
-        return rc
+        return text_type(rc)
 
     def _list(self, node):
         if node.hasAttribute('style'):
@@ -727,7 +729,7 @@ class _rml_template(object):
 
 
 def parseString(data, fout=None):
-    r = _rml_doc(data)
+    r = _rml_doc(data.strip())
     if fout:
         fp = open(fout, "wb")
         r.render(fp)
