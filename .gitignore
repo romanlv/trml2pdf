@@ -1,6 +1,8 @@
 *.pyc
 .env/*
+.eggs/*
 dist/*
+build/*
 *.egg-info/*
 .tox/*
 .results.txt
