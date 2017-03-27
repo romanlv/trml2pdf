@@ -32,3 +32,6 @@ context = Context(data)
 xmlstring = template.render(context)
 pdfstr = trml2pdf.parseString(xmlstring)
 ```
+
+# Looking for maintainer 
+I no longer use this library in my own projects, so there is no interest in adding new feature or improving things. If you are intersted in taking it over or being actively involved, please let me know
