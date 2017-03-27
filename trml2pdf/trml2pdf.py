@@ -266,7 +266,8 @@ class _rml_canvas(object):
         for n in node.childNodes:
             if n.nodeType == n.ELEMENT_NODE:
                 if n.localName == 'pageNumber':
-                    rc += str(self.canvas.getPageNumber())
+                    countingFrom = utils.tuple_int_get(n, 'countingFrom', default=[0])[0]
+                    rc += str(self.canvas.getPageNumber() + countingFrom)
             elif (n.nodeType == node.CDATA_SECTION_NODE):
                 rc += n.data
             elif (n.nodeType == node.TEXT_NODE):
