@@ -1,5 +1,7 @@
 Open source implementation of RML (Report Markup Language) from ReportLab
 
+[![Build Status](https://travis-ci.org/romanlv/trml2pdf.svg?branch=master)](https://travis-ci.org/romanlv/trml2pdf)
+
 [RML User Guide](http://www.reportlab.com/docs/rml2pdf-userguide.pdf)  (or [beginner tutorial](http://www.reportlab.com/docs/rml-for-idiots.pdf))
 
 Not all tags are supported, but most of them work.
