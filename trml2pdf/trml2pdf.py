@@ -101,10 +101,10 @@ class _rml_styles(object):
         for attr in ['bulletColor']:
             if node.hasAttribute(attr):
                 style.__dict__[attr] = color.get(node.getAttribute(attr))
-        for attr in ['bulletType', 'bulletFontName', 'bulletDetent', 'bulletDir', 'bulletFormat', 'start']:
+        for attr in ['bulletType', 'bulletFontName', 'bulletDir', 'bulletFormat', 'start']:
             if node.hasAttribute(attr):
                 style.__dict__[attr] = node.getAttribute(attr)
-        for attr in ['leftIndent', 'rightIndent', 'bulletFontSize', 'bulletOffsetY']:
+        for attr in ['leftIndent', 'rightIndent', 'bulletFontSize', 'bulletOffsetY', 'bulletDedent']:
             if node.hasAttribute(attr):
                 style.__dict__[attr] = utils.unit_get(node.getAttribute(attr))
         if node.hasAttribute('bulletAlign'):
