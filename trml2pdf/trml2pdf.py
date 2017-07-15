@@ -647,7 +647,7 @@ class _rml_flowable(object):
             return platypus.Spacer(width=width, height=length)
         elif node.localName == 'barCode':
             return code39.Extended39(self._textual(node))
-        elif node.localName == 'pageBreak':
+        elif node.localName in ['pageBreak', 'nextPage']:
             return platypus.PageBreak()
         elif node.localName == 'condPageBreak':
             return platypus.CondPageBreak(**(utils.attr_get(node, ['height'])))
