@@ -388,6 +388,8 @@ class _rml_canvas(object):
 
         if node.hasAttribute("preserveAspectRatio"):
             args["preserveAspectRatio"] = True
+        if node.hasAttribute('mask'):
+            args['mask'] = node.getAttribute('mask')
         if ('width' in args) and ('height' not in args):
             args['height'] = sy * args['width'] / sx
         elif ('height' in args) and ('width' not in args):
