@@ -222,13 +222,18 @@ class _rml_doc(object):
 
         for node in els:
             for font in node.getElementsByTagName('registerFont'):
-                name = font.getAttribute('fontName').encode('ascii')
-                fname = font.getAttribute('fontFile').encode('ascii')
+                name = font.getAttribute('fontName')
+                fname = font.getAttribute('fontFile')
                 pdfmetrics.registerFont(TTFont(name, fname))
-                addMapping(name, 0, 0, name)  # normal
-                addMapping(name, 0, 1, name)  # italic
-                addMapping(name, 1, 0, name)  # bold
-                addMapping(name, 1, 1, name)  # italic and bold
+            for font_family in node.getElementsByTagName('registerFontFamily'):
+                normal = font_family.getAttribute('normal')
+                bold = font_family.getAttribute('bold')
+                italic = font_family.getAttribute('italic')
+                bold_italic = font_family.getAttribute('boldItalic')
+                addMapping(normal, 0, 0, normal)  # normal
+                addMapping(normal, 1, 0, bold)  # bold
+                addMapping(normal, 0, 1, italic)  # italic
+                addMapping(normal, 1, 1, bold_italic)  # italic and bold
 
     def render(self, out):
         el = self.dom.documentElement.getElementsByTagName('docinit')
