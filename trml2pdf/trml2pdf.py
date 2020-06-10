@@ -371,7 +371,7 @@ class _rml_canvas(object):
             dashes = node.getAttribute('dash').split(',')
             for x in range(len(dashes)):
                 dashes[x] = utils.unit_get(dashes[x])
-            self.canvas.setDash(node.getAttribute('dash').split(','))
+            self.canvas.setDash(dashes)
 
     def _image(self, node):
         from six.moves import urllib
