@@ -340,6 +340,14 @@ class _rml_canvas(object):
             dy = utils.unit_get(node.getAttribute('dy'))
         self.canvas.translate(dx, dy)
 
+    def _transform(self, node):
+        # FIXME: any whitespaces
+        args = []
+        for i in self._textual(node).lstrip().rstrip().split(' '):
+            args.append(float(i))
+            sys.stderr.write(str(float(i)) + '\n')
+        self.canvas.transform(*args)
+
     def _circle(self, node):
         self.canvas.circle(x_cen=utils.unit_get(node.getAttribute('x')), y_cen=utils.unit_get(node.getAttribute(
             'y')), r=utils.unit_get(node.getAttribute('radius')), **utils.attr_get(node, [], {'fill': 'bool', 'stroke': 'bool'}))
@@ -481,6 +489,7 @@ class _rml_canvas(object):
             'path': self._path,
             'rotate': lambda node: self.canvas.rotate(float(node.getAttribute('degrees'))),
             'translate': self._translate,
+            'transform': self._transform,
             'image': self._image,
             'barCode': self._barcode,
         }

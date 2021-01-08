@@ -1,4 +1,5 @@
-<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<!-- simplified test_023_ttfont.rml -->
 <document filename="ex_ttfonts.pdf" invariant="1">
   <docinit>
     <registerTTFont faceName="Vera" fileName="ttf/Vera.ttf" />
