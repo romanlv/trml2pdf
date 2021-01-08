@@ -1,0 +1,45 @@
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document>
+    <template pageSize="(8.5in, 11in)" showBoundary="1">
+        <pageTemplate id="main">
+            <frame id="testframe1" x1="0.5in" y1="9.5in" width="2in" height="1in"/>
+            <frame id="testframe2" x1="0.5in" y1="8in" width="2in" height="1in"/>
+            <frame id="testframe3" x1="0.5in" y1="6.5in" width="2in" height="1in"/>
+            <frame id="testframe4" x1="0.5in" y1="5in" width="2in" height="1in"/>
+            <frame id="testframe5" x1="0.5in" y1="3.5in" width="2in" height="1in"/>
+        </pageTemplate>
+    </template>
+    <stylesheet>
+    </stylesheet>
+    <story>
+        <keepInFrame onOverflow="shrink">
+            <para fontSize="30">
+                This text should be shrunk from size 30 to fit into the frame
+            </para>
+        </keepInFrame>
+        <nextFrame/>
+        <keepInFrame maxWidth="72"  maxHeight="36">
+            <para fontSize="30">
+                This text should be shrunk from size 30 to fit into the frame
+            </para>
+        </keepInFrame>
+        <nextFrame/>
+        <keepInFrame onOverflow="error">
+            <para fontSize="20">
+                onOverflow=error
+            </para>
+        </keepInFrame>
+        <nextFrame/>
+        <keepInFrame onOverflow="truncate">
+            <para fontSize="30">
+                Truncate this text!!
+            </para>
+        </keepInFrame>
+        <nextFrame/>
+        <keepInFrame onOverflow="overflow">
+            <para fontSize="30">
+                This text will remain size 30 and overflow out of the frame!
+            </para>
+        </keepInFrame>
+    </story>
+</document>
