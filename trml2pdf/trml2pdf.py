@@ -225,6 +225,10 @@ class _rml_doc(object):
                 name = font.getAttribute('fontName')
                 fname = font.getAttribute('fontFile')
                 pdfmetrics.registerFont(TTFont(name, fname))
+            for font in node.getElementsByTagName('registerTTFont'):
+                name = font.getAttribute('faceName')
+                fname = font.getAttribute('fileName')
+                pdfmetrics.registerFont(TTFont(name, fname))  # , subfontIndex=subfontIndex
             for font_family in node.getElementsByTagName('registerFontFamily'):
                 normal = font_family.getAttribute('normal')
                 bold = font_family.getAttribute('bold')
