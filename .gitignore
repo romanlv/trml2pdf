@@ -5,6 +5,7 @@ dist/*
 build/*
 *.egg-info/*
 .tox/*
+.idea/*
 .results.txt
 *.orig
 *.log
