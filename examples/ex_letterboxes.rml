@@ -3,20 +3,20 @@
 <!DOCTYPE document SYSTEM "rml_1_0.dtd">
 <document filename="ex_letterboxes.pdf">
 	<template pageSize="(595, 842)" leftMargin="72" showBoundary="1">
-	<pageTemplate id="main" pageSize="a4 portrait">
-		<pageGraphics>
-		    <setFont name="Helvetica-Bold" size="18"/>
-		    <drawString x="35" y="783">RML Example 12: Forms</drawString>
-		</pageGraphics>
-		<frame id="second" x1="35" y1="45" width="525" height="590"/>
-	</pageTemplate>
-	<pageTemplate id="main2" pageSize="a4 portrait">
-		<pageGraphics>
-		  <setFont name="Helvetica-Bold" size="18"/>
-		    <drawString x="35" y="783">RML Example 0: Catchforms</drawString>
-		</pageGraphics>
-		<frame id="second" x1="35" y1="45" width="525" height="685"/>
-	</pageTemplate>
+        <pageTemplate id="main" pageSize="a4 portrait">
+            <pageGraphics>
+                <setFont name="Helvetica-Bold" size="18"/>
+                <drawString x="35" y="783">RML Example 12: Forms</drawString>
+            </pageGraphics>
+            <frame id="second" x1="35" y1="45" width="525" height="590"/>
+        </pageTemplate>
+        <pageTemplate id="main2" pageSize="a4 portrait">
+            <pageGraphics>
+                <setFont name="Helvetica-Bold" size="18"/>
+                <drawString x="35" y="783">RML Example 0: Catchforms</drawString>
+            </pageGraphics>
+            <frame id="second" x1="35" y1="45" width="525" height="685"/>
+        </pageTemplate>
 	</template>
 	<stylesheet>
 		<initialize>
@@ -24,26 +24,24 @@
 		</initialize>
 		<paraStyle name="normal" fontName="Helvetica" fontSize="10" leading="12" spaceAfter="10"/>
 		<paraStyle name="intro"  fontName="Helvetica" fontSize="12" leading="12" spaceAfter="12"/>
-		<!-- boxStyle name="special" labelTextColor="green" textColor="green" boxFillColor="paleturquoise"/>
-		<boxStyle name="special2" labelTextColor="red" boxFillColor="None"/ -->
-		
+		<boxStyle name="special" labelTextColor="green" textColor="green" boxFillColor="paleturquoise"/>
+		<boxStyle name="special2" labelTextColor="red" boxFillColor="None"/>
 	</stylesheet>
 	<story>
-<setNextTemplate name="main"/>
+        <setNextTemplate name="main"/>
 		<illustration width="8cm" height="2cm">
 			<letterBoxes x="1cm" y="0" count="15">letters &amp; stuff</letterBoxes>
 		</illustration>
 		<para style="normal">The next two test whether style inheritance works for formStyles</para>
 		<illustration width="8cm" height="3cm">
-			<!-- letterBoxes style="special" x="1cm" y="1.5cm" count="25" label="I should be green">Uses style "special"</letterBoxes>
-			<letterBoxes style="special2" x="1cm" y="0" count="25" label="I should be red with transparent background">Uses style 'special2'</letterBoxes -->
+			<letterBoxes style="special" x="1cm" y="1.5cm" count="25" label="I should be green">Uses style "special"</letterBoxes>
+			<letterBoxes style="special2" x="1cm" y="0" count="25" label="I should be red with transparent background">Uses style 'special2'</letterBoxes>
 		</illustration>
 
 		<para style="normal">Fancy comb marks..</para>
 		<illustration width="8cm" height="2cm">
 			<letterBoxes x="1cm" y="0" count="15" boxWidth="0.4cm" boxHeight="1cm" label="This has fancy combs on" combHeight="0.25">Uses combHeight</letterBoxes>
 		</illustration>
-		
 
 		<nextPage/>
 		<para style="normal">Spaces between boxes: regular using boxGap, and variable spacing with boxExtraGaps.
@@ -111,7 +109,6 @@
 				label="quick check that non-gap ones draw OK too; create extra lines if needed."
 				>AB123456A</letterBoxes>
 
-
 			<letterBoxes 
 				x="1cm" 
 				y="1cm" 
@@ -123,8 +120,6 @@
 				strokeTop="0"
 				combHeight="1.00"
 				>AB123456A</letterBoxes>
-
-
 		</illustration>
 
 		<spacer length="1cm"/>

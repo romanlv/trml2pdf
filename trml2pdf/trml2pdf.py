@@ -31,8 +31,12 @@ from reportlab.graphics.barcode import code39
 import reportlab
 from reportlab.pdfgen import canvas
 
-from . import color
-from . import utils
+try:    # library mode
+    from . import color
+    from . import utils
+except: # standalone mode
+    import color
+    import utils
 
 from six import text_type
 
@@ -537,15 +541,15 @@ class _rml_canvas(object):
             # 5.1. rect
             self.canvas.saveState()
             if ('boxFillColor' in args):
-                self.canvas.setFillColor(args['boxFillColor'])
+                self.canvas.setFillColor(color.get(args['boxFillColor']))
             if ('boxStrokeColor' in args):
-                self.canvas.setStrokeColor(args['boxStrokeColor'])
+                self.canvas.setStrokeColor(color.get(args['boxStrokeColor']))
             self.canvas.rect(x = x1, y = y, width = w, height = h, fill = ('boxFillColor' in args))
             self.canvas.restoreState()
             # 5.2. symbol
             self.canvas.saveState()
             if ('textColor' in args):
-                self.canvas.setFillColor(args['textColor'])
+                self.canvas.setFillColor(color.get(args['textColor']))
             if (i < len(text)):
                 self.canvas.drawCentredString(float(x1 + (float(w) / 2.0)), float(y) + dy, text=text[i])
             self.canvas.restoreState()
@@ -558,7 +562,7 @@ class _rml_canvas(object):
             elif ('labelFontName' in args):
                 self.canvas.setFont(args['labelFontName'], args.get('labelFontSize'), self.canvas._fontsize)	# hack
             if ('labelTextColor' in args):
-                self.canvas.setFillColor(args['labelTextColor'])
+                self.canvas.setFillColor(color.get(args['labelTextColor']))
             y += args.get('labelOffsetY', 0)
             self.canvas.drawString(x = x + args.get('labelOffsetX', 0), y = y + args.get('labelOffsetY', 0), text=args['label'])
             # TODO: align, default OffsetX
@@ -606,7 +610,7 @@ class _rml_draw(object):
 
     def render(self, canvas, doc):
         canvas.saveState()
-        cnv = _rml_canvas(canvas, doc, self.styles)
+        cnv = _rml_canvas(canvas, None, self)   # can be (canvas, doc, self)?
         cnv.render(self.node)
         canvas.restoreState()
 
@@ -831,7 +835,7 @@ class _rml_template(object):
                 frames.append(frame)
             gr = pt.getElementsByTagName('pageGraphics')
             if len(gr):
-                drw = _rml_draw(gr[0], self.doc)
+                drw = _rml_draw(gr[0], self.doc.styles)
                 self.page_templates.append(platypus.PageTemplate(
                     frames=frames, onPage=drw.render, **utils.attr_get(pt, [], {'id': 'str'})))
             else:
@@ -871,7 +875,7 @@ def main():
         # FIXME: dirty hack
         # print(parseString(open(sys.argv[1], 'r').read()))
         import os
-        os.write(1, parseString(open(sys.argv[1], 'r').read()))
+        os.write(1, parseString(open(sys.argv[1], 'rt').read()))
     else:
         print('Usage: trml2pdf input.rml >output.pdf')
         print('Try \'trml2pdf --help\' for more information.')
