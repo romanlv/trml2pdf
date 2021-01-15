@@ -4,8 +4,19 @@ Dependencies:
 	- Reportlab PDF-Toolkit current version
 	- Python-Imaging (PIL) if you use bitmap pictures
 
-To install Tiny RML2PDF, copy the directory trml2pdf where you want!
+To install Tiny RML2PDF, use pip 
 
 That's all folks :)
 
-This Software is only tested with Linux and Python-2.2
+This Software is only tested with Linux and Python-2.x (and Python 3.4)
+
+
+
+
+
+To test with TOX: 
+
+# on ubuntu/mint
+
+sudo apt-get install python-dev libfreetype6-dev python-imaging libjpeg8-dev
+sudo apt-get install python3-dev  # python 3 support

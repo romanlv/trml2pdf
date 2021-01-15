@@ -1,0 +1,46 @@
+<!-- simplified test_023_ttfont.rml -->
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document filename="ex_ttfonts.pdf" invariant="1">
+  <docinit>
+    <registerTTFont faceName="Vera" fileName="ttf/Vera.ttf" />
+    <registerTTFont faceName="VeraBold" fileName="ttf/VeraBd.ttf" />
+    <registerTTFont faceName="VeraItalic" fileName="ttf/VeraIt.ttf" />
+    <registerTTFont faceName="VeraBoldItalic" fileName="ttf/VeraBI.ttf" />
+	<registerFontFamily normal="Vera" bold="VeraBold" italic="VeraItalic" boldItalic="VeraBoldItalic"/>
+  </docinit>
+
+<template pageSize="(8.5in, 11in)" leftMargin="72" showBoundary="1">
+	<pageTemplate id="main" pageSize="(595,842)">
+	<pageGraphics>
+		<setFont name="Helvetica-Bold" size="18"/>
+		    <drawString x="35" y="783">RML Example 24: TTfonts</drawString>
+        <rect x="523" y="520" width="0" height="120"/>
+		<setFont name="Vera" size="18"/>
+		<drawRightString x="523" y="580">Test of Vera alignment - should touch line</drawRightString>
+	</pageGraphics>
+	<frame id="second" x1="35" y1="45" width="525" height="440"/>
+	</pageTemplate>
+</template>
+
+<stylesheet>
+	<paraStyle name="h1" fontName="VeraBold" fontSize="32" leading="36"/>
+	<paraStyle name="normal" fontName="Vera" fontSize="10" leading="12" spaceBefore="6"/>
+	<paraStyle name="rjust" parent="normal" fontName="VeraBold" alignment="RIGHT"/>
+	<paraStyle name="plain" parent="normal" fontName="Helvetica"/>
+	<paraStyle name="intro"  fontName="Helvetica" fontSize="12" leading="12" spaceAfter="12"/>
+</stylesheet>
+
+<story>
+<para style="intro">RML (Report Markup Language) is ReportLab's own language for specifying the appearance of a printed page, which is converted into PDF by the utility rml2pdf.</para>
+<para style="intro">These RML samples showcase techniques and features for generating various types of ouput and are distributed within our commercial package as test cases. Each should be self explanatory and stand alone.</para>
+<illustration height="3" width="525" align="center">
+<fill color= "(0,0.99,0.97,0.0)" />
+<rect x="0" y = "-12" width="525" height="3" round="1" fill="1" stroke = "Yes" />
+</illustration>
+<para style="h1">TrueType font tests</para>
+<para style="normal">This should be in Vera, and the one above in chunky VeraBold.
+But if we're running on a platform where we can't find Vera, you won't even see this document...</para>
+<para style="rjust">This should be in extra chunky VeraBold, flush right.</para>
+<para style="plain">This should be in Helvetica <font face="Vera">Vera <b>VeraBold</b> <i>VeraItalic</i> <b><i>VeraBoldItalic</i></b> <i><b>VeraItalicBold</b></i></font> and back to Helvetica</para>
+</story>
+</document>
