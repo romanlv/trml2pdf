@@ -31,8 +31,12 @@ from reportlab.graphics.barcode import code39
 import reportlab
 from reportlab.pdfgen import canvas
 
-from . import color
-from . import utils
+try:    # library mode
+    from . import color
+    from . import utils
+except: # standalone mode
+    import color
+    import utils
 
 from six import text_type
 
@@ -59,6 +63,7 @@ class _rml_styles(object):
         self.names = {}
         self.table_styles = {}
         self.list_styles = {}
+        self.box_styles = {}
         for node in nodes:
             for style in node.getElementsByTagName('blockTableStyle'):
                 self.table_styles[
@@ -69,6 +74,9 @@ class _rml_styles(object):
             for style in node.getElementsByTagName('paraStyle'):
                 self.styles[
                     style.getAttribute('name')] = self._para_style_get(style)
+            for style in node.getElementsByTagName('boxStyle'):
+                self.box_styles[
+                    style.getAttribute('name')] = self._box_style_get(style)
             for variable in node.getElementsByTagName('initialize'):
                 for name in variable.getElementsByTagName('name'):
                     self.names[name.getAttribute('id')] = name.getAttribute(
@@ -195,6 +203,20 @@ class _rml_styles(object):
         self._para_style_update(style, node)
         return style
 
+    def _box_style_get(self, node):
+        class BoxStyle(reportlab.lib.styles.PropertySet):
+            pass
+        return BoxStyle(node.getAttribute('name'), **utils.attr_get(node, ('fontSize', 'labelFontSize', 'boxWidth', 'boxHeight'), {
+                'parent': 'str',
+                'alias': 'str',
+                'fontName': 'str',
+                'labelFontName': 'str',
+                'textColor': 'str',
+                'boxStrokeColor': 'str',
+                'boxFillColor': 'str',
+                'labelTextColor': 'str',
+        }))
+
     def para_style_get(self, node):
         style = False
         if node.hasAttribute('style'):
@@ -225,6 +247,10 @@ class _rml_doc(object):
                 name = font.getAttribute('fontName')
                 fname = font.getAttribute('fontFile')
                 pdfmetrics.registerFont(TTFont(name, fname))
+            for font in node.getElementsByTagName('registerTTFont'):
+                name = font.getAttribute('faceName')
+                fname = font.getAttribute('fileName')
+                pdfmetrics.registerFont(TTFont(name, fname))  # , subfontIndex=subfontIndex
             for font_family in node.getElementsByTagName('registerFontFamily'):
                 normal = font_family.getAttribute('normal')
                 bold = font_family.getAttribute('bold')
@@ -335,6 +361,14 @@ class _rml_canvas(object):
         if node.hasAttribute('dy'):
             dy = utils.unit_get(node.getAttribute('dy'))
         self.canvas.translate(dx, dy)
+
+    def _transform(self, node):
+        # FIXME: any whitespaces
+        args = []
+        for i in self._textual(node).lstrip().rstrip().split(' '):
+            args.append(float(i))
+            sys.stderr.write(str(float(i)) + '\n')
+        self.canvas.transform(*args)
 
     def _circle(self, node):
         self.canvas.circle(x_cen=utils.unit_get(node.getAttribute('x')), y_cen=utils.unit_get(node.getAttribute(
@@ -457,6 +491,83 @@ class _rml_canvas(object):
         self.canvas.drawPath(
             self.path, **utils.attr_get(node, [], {'fill': 'bool', 'stroke': 'bool'}))
 
+    def _letterBoxes(self, node):
+        # 1. get args (args.update(style))
+        attrs = utils.attr_get(node, ('x', 'y', 'boxWidth', 'boxHeight', 'lineWidth', 'fontSize', 'labelFontSize', 'labelOffsetX', 'labelOffsetY',), {
+                'style': 'str',
+                'count': 'int',
+                'boxStrokeColor': 'str',
+                'boxFillColor': 'str',
+                'textColor': 'str',
+                'fontName': 'str',
+                'label': 'str',
+                'labelTextColor': 'str',
+                'labelFontName': 'str',
+        })
+        # 2. apply style (hack)
+        if ('style' in attrs):
+            # FIXME: error
+            args = copy.deepcopy(self.styles.box_styles[attrs['style']].__dict__)
+            #args = copy.deepcopy(self.box_styles[attrs['style']].__dict__)
+            args.update(attrs)
+        else:
+            args = attrs
+        # 3. draw:
+        # rect (x, y, width, height, stroke:bool, fill=bool) + setFillColor(color) + setStrokeColor(color) + setLineWidth(lineWidth)
+        # drawString: x, y + setFont(name, size)|setFontSize()|canvas._fontsize + setFillColor(textColor)
+        #
+        self.canvas.saveState()
+        if ('lineWidth' in args):
+            self.canvas.setLineWidth(args['lineWidth'])
+        if (('fontSize' in args) and not ('fontName' in args)):
+            self.canvas.setFontSize(args['fontSize'])
+        #print "FONT NAME:", self.canvas._fontname
+        elif ('fontName' in args):
+            self.canvas.setFont(args['fontName'], args.get('fontSize'), self.canvas._fontsize)	# hack
+        # 4. calc: boxWidth, boxHeight
+        if not ('boxWidth' in args):
+            args['boxWidth'] = self.canvas.stringWidth('W', self.canvas._fontname, self.canvas._fontsize)
+        if not ('boxHeight' in args):
+            args['boxHeight'] = self.canvas._fontsize + 2
+        text = str(self._textual(node))
+        x = args['x']
+        y = args['y']
+        w = args['boxWidth']
+        h = args['boxHeight']
+        dy = (0.5 * h) - (0.25 * self.canvas._fontsize)
+        # 5. let's go
+        for i in range(args['count']):
+            x1 = x + i * w
+            # 5.1. rect
+            self.canvas.saveState()
+            if ('boxFillColor' in args):
+                self.canvas.setFillColor(color.get(args['boxFillColor']))
+            if ('boxStrokeColor' in args):
+                self.canvas.setStrokeColor(color.get(args['boxStrokeColor']))
+            self.canvas.rect(x = x1, y = y, width = w, height = h, fill = ('boxFillColor' in args))
+            self.canvas.restoreState()
+            # 5.2. symbol
+            self.canvas.saveState()
+            if ('textColor' in args):
+                self.canvas.setFillColor(color.get(args['textColor']))
+            if (i < len(text)):
+                self.canvas.drawCentredString(float(x1 + (float(w) / 2.0)), float(y) + dy, text=text[i])
+            self.canvas.restoreState()
+        self.canvas.restoreState()
+        # 5.3. label
+        if ('label' in args):
+            self.canvas.saveState()
+            if (('labelFontSize' in args) and not ('labelFontName' in args)):
+                self.canvas.setFontSize(args['labelFontSize'])
+            elif ('labelFontName' in args):
+                self.canvas.setFont(args['labelFontName'], args.get('labelFontSize'), self.canvas._fontsize)	# hack
+            if ('labelTextColor' in args):
+                self.canvas.setFillColor(color.get(args['labelTextColor']))
+            y += args.get('labelOffsetY', 0)
+            self.canvas.drawString(x = x + args.get('labelOffsetX', 0), y = y + args.get('labelOffsetY', 0), text=args['label'])
+            # TODO: align, default OffsetX
+            self.canvas.restoreState()
+
     def render(self, node):
         tags = {
             'drawCentredString': self._drawCenteredString,
@@ -477,8 +588,10 @@ class _rml_canvas(object):
             'path': self._path,
             'rotate': lambda node: self.canvas.rotate(float(node.getAttribute('degrees'))),
             'translate': self._translate,
+            'transform': self._transform,
             'image': self._image,
             'barCode': self._barcode,
+            'letterBoxes': self._letterBoxes,
         }
         for nd in node.childNodes:
             if nd.nodeType == nd.ELEMENT_NODE:
@@ -497,7 +610,7 @@ class _rml_draw(object):
 
     def render(self, canvas, doc):
         canvas.saveState()
-        cnv = _rml_canvas(canvas, doc, self.styles)
+        cnv = _rml_canvas(canvas, None, self)   # can be (canvas, doc, self)?
         cnv.render(self.node)
         canvas.restoreState()
 
@@ -722,7 +835,7 @@ class _rml_template(object):
                 frames.append(frame)
             gr = pt.getElementsByTagName('pageGraphics')
             if len(gr):
-                drw = _rml_draw(gr[0], self.doc)
+                drw = _rml_draw(gr[0], self.doc.styles)
                 self.page_templates.append(platypus.PageTemplate(
                     frames=frames, onPage=drw.render, **utils.attr_get(pt, [], {'id': 'str'})))
             else:
@@ -759,7 +872,10 @@ def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == '--help':
             trml2pdf_help()
-        print(parseString(open(sys.argv[1], 'r').read()))
+        # FIXME: dirty hack
+        # print(parseString(open(sys.argv[1], 'r').read()))
+        import os
+        os.write(1, parseString(open(sys.argv[1], 'rt').read()))
     else:
         print('Usage: trml2pdf input.rml >output.pdf')
         print('Try \'trml2pdf --help\' for more information.')
