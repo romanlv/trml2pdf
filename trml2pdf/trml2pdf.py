@@ -777,7 +777,7 @@ class _rml_flowable(object):
             return platypus.CondPageBreak(1000)  # TODO: change the 1000 !
         elif node.localName == 'ul':
             return self._list(node)
-        elif node.localName == 'keepInFrame':
+        elif node.localName == 'keepInFrame-x':
             substory = self.render(node)
             kwargs = {
                 "maxWidth": 0,
