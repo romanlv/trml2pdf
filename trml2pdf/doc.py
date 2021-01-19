@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # trml2pdf - An RML to PDF converter
@@ -21,24 +20,20 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+# 1. system
 import copy
 import io
 import sys
 import xml.dom.minidom
-
+from six import text_type
+# 2. 3rd parties
 from reportlab import platypus
 from reportlab.graphics.barcode import code39
 import reportlab
 from reportlab.pdfgen import canvas
-
-try:    # library mode
-    from . import color
-    from . import utils
-except: # standalone mode
-    import color
-    import utils
-
-from six import text_type
+# 3. local
+from . import color
+from . import utils
 
 #
 # Change this to UTF-8 if you plan tu use Reportlab's UTF-8 support
@@ -860,25 +855,3 @@ def parseString(data, fout=None):
         fp = io.BytesIO()
         r.render(fp)
         return fp.getvalue()
-
-
-def trml2pdf_help():
-    print('Usage: trml2pdf input.rml >output.pdf')
-    print('Render the standard input (RML) and output a PDF file')
-    sys.exit(0)
-
-
-def main():
-    if len(sys.argv) > 1:
-        if sys.argv[1] == '--help':
-            trml2pdf_help()
-        # FIXME: dirty hack
-        # print(parseString(open(sys.argv[1], 'r').read()))
-        import os
-        os.write(1, parseString(open(sys.argv[1], 'rt').read()))
-    else:
-        print('Usage: trml2pdf input.rml >output.pdf')
-        print('Try \'trml2pdf --help\' for more information.')
-
-if __name__ == "__main__":
-    main()

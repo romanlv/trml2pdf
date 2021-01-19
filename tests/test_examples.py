@@ -1,7 +1,7 @@
 import os
 import unittest
 
-import trml2pdf  # dev mode: python setup.py develop
+from trml2pdf.doc import parseString  # dev mode: python setup.py develop
 
 from six import text_type
 
@@ -30,7 +30,7 @@ class TestExamples(unittest.TestCase):
                 path = name  # '{}/{}'.format(EXAMPLES_DIR, name)
                 print('running: {}'.format(path))
                 with open(path, "r") as f:
-                    output = trml2pdf.parseString(f.read())
+                    output = parseString(f.read())
                 self.assertIsNotNone(output)
 
 
