@@ -51,7 +51,7 @@ def _child_get(node, childs):
     return clds
 
 
-class _rml_styles(object):
+class RmlStyles(object):
 
     def __init__(self, nodes):
         self.styles = {}
@@ -226,7 +226,7 @@ class _rml_styles(object):
         return self._para_style_update(style, node)
 
 
-class _rml_doc(object):
+class RmlDoc(object):
 
     def __init__(self, data):
         self.dom = xml.dom.minidom.parseString(data)
@@ -262,24 +262,24 @@ class _rml_doc(object):
             self.docinit(el)
 
         el = self.dom.documentElement.getElementsByTagName('stylesheet')
-        self.styles = _rml_styles(el)
+        self.styles = RmlStyles(el)
 
         el = self.dom.documentElement.getElementsByTagName('template')
         if len(el):
-            pt_obj = _rml_template(out, el[0], self)
+            pt_obj = RmlTemplate(out, el[0], self)
             pt_obj.render(
                 self.dom.documentElement.getElementsByTagName('story')[0])
         else:
             self.canvas = canvas.Canvas(out)
             pd = self.dom.documentElement.getElementsByTagName(
                 'pageDrawing')[0]
-            pd_obj = _rml_canvas(self.canvas, None, self)
+            pd_obj = RmlCanvas(self.canvas, None, self)
             pd_obj.render(pd)
             self.canvas.showPage()
             self.canvas.save()
 
 
-class _rml_canvas(object):
+class RmlCanvas(object):
 
     def __init__(self, canvas, doc_tmpl=None, doc=None):
         self.canvas = canvas
@@ -370,7 +370,7 @@ class _rml_canvas(object):
             'y')), r=utils.unit_get(node.getAttribute('radius')), **utils.attr_get(node, [], {'fill': 'bool', 'stroke': 'bool'}))
 
     def _place(self, node):
-        flows = _rml_flowable(self.doc).render(node)
+        flows = RmlFlowable(self.doc).render(node)
         infos = utils.attr_get(node, ['x', 'y', 'width', 'height'])
 
         infos['y'] += infos['height']
@@ -596,7 +596,7 @@ class _rml_canvas(object):
                         break
 
 
-class _rml_draw(object):
+class RmlDraw(object):
 
     def __init__(self, node, styles):
         self.node = node
@@ -605,12 +605,12 @@ class _rml_draw(object):
 
     def render(self, canvas, doc):
         canvas.saveState()
-        cnv = _rml_canvas(canvas, None, self)   # can be (canvas, doc, self)?
+        cnv = RmlCanvas(canvas, None, self)   # can be (canvas, doc, self)?
         cnv.render(self.node)
         canvas.restoreState()
 
 
-class _rml_flowable(object):
+class RmlFlowable(object):
 
     def __init__(self, doc):
         self.doc = doc
@@ -713,7 +713,7 @@ class _rml_flowable(object):
 
             def draw(self):
                 canvas = self.canv
-                drw = _rml_draw(self.node, self.styles)
+                drw = RmlDraw(self.node, self.styles)
                 drw.render(self.canv, None)
         return Illustration(node, self.styles)
 
@@ -806,7 +806,7 @@ class _rml_flowable(object):
         return story
 
 
-class _rml_template(object):
+class RmlTemplate(object):
 
     def __init__(self, out, node, doc):
         if not node.hasAttribute('pageSize'):
@@ -830,7 +830,7 @@ class _rml_template(object):
                 frames.append(frame)
             gr = pt.getElementsByTagName('pageGraphics')
             if len(gr):
-                drw = _rml_draw(gr[0], self.doc.styles)
+                drw = RmlDraw(gr[0], self.doc.styles)
                 self.page_templates.append(platypus.PageTemplate(
                     frames=frames, onPage=drw.render, **utils.attr_get(pt, [], {'id': 'str'})))
             else:
@@ -839,13 +839,13 @@ class _rml_template(object):
         self.doc_tmpl.addPageTemplates(self.page_templates)
 
     def render(self, node_story):
-        r = _rml_flowable(self.doc)
+        r = RmlFlowable(self.doc)
         fis = r.render(node_story)
         self.doc_tmpl.build(fis)
 
 
 def parseString(data, fout=None):
-    r = _rml_doc(data.strip())
+    r = RmlDoc(data.strip())
     if fout:
         fp = open(fout, "wb")
         r.render(fp)
