@@ -25,10 +25,34 @@ import io
 import xml.dom.minidom
 # 2. 3rd parties
 from reportlab import platypus
-import reportlab
 from reportlab.pdfgen import canvas
 # 3. local
 from . import canv, flowable, styles, utils
+
+
+def docinit(els):
+    from reportlab.lib.fonts import addMapping
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    for node in els:
+        for font in node.getElementsByTagName('registerFont'):
+            name = font.getAttribute('fontName')
+            fname = font.getAttribute('fontFile')
+            pdfmetrics.registerFont(TTFont(name, fname))
+        for font in node.getElementsByTagName('registerTTFont'):
+            name = font.getAttribute('faceName')
+            fname = font.getAttribute('fileName')
+            pdfmetrics.registerFont(TTFont(name, fname))  # , subfontIndex=subfontIndex
+        for font_family in node.getElementsByTagName('registerFontFamily'):
+            normal = font_family.getAttribute('normal')
+            bold = font_family.getAttribute('bold')
+            italic = font_family.getAttribute('italic')
+            bold_italic = font_family.getAttribute('boldItalic')
+            addMapping(normal, 0, 0, normal)  # normal
+            addMapping(normal, 1, 0, bold)  # bold
+            addMapping(normal, 0, 1, italic)  # italic
+            addMapping(normal, 1, 1, bold_italic)  # italic and bold
 
 
 class RmlDoc(object):
@@ -36,39 +60,15 @@ class RmlDoc(object):
     def __init__(self, data):
         self.dom = xml.dom.minidom.parseString(data)
         self.filename = self.dom.documentElement.getAttribute('filename')
-
-    def docinit(self, els):
-        from reportlab.lib.fonts import addMapping
-        from reportlab.pdfbase import pdfmetrics
-        from reportlab.pdfbase.ttfonts import TTFont
-
-        for node in els:
-            for font in node.getElementsByTagName('registerFont'):
-                name = font.getAttribute('fontName')
-                fname = font.getAttribute('fontFile')
-                pdfmetrics.registerFont(TTFont(name, fname))
-            for font in node.getElementsByTagName('registerTTFont'):
-                name = font.getAttribute('faceName')
-                fname = font.getAttribute('fileName')
-                pdfmetrics.registerFont(TTFont(name, fname))  # , subfontIndex=subfontIndex
-            for font_family in node.getElementsByTagName('registerFontFamily'):
-                normal = font_family.getAttribute('normal')
-                bold = font_family.getAttribute('bold')
-                italic = font_family.getAttribute('italic')
-                bold_italic = font_family.getAttribute('boldItalic')
-                addMapping(normal, 0, 0, normal)  # normal
-                addMapping(normal, 1, 0, bold)  # bold
-                addMapping(normal, 0, 1, italic)  # italic
-                addMapping(normal, 1, 1, bold_italic)  # italic and bold
+        self.canvas = None
+        self.styles = None
 
     def render(self, out):
         el = self.dom.documentElement.getElementsByTagName('docinit')
         if el:
-            self.docinit(el)
-
+            docinit(el)
         el = self.dom.documentElement.getElementsByTagName('stylesheet')
         self.styles = styles.RmlStyles(el)
-
         el = self.dom.documentElement.getElementsByTagName('template')
         if len(el):
             pt_obj = RmlTemplate(out, el[0], self)
@@ -88,14 +88,16 @@ class RmlTemplate(object):
 
     def __init__(self, out, node, doc):
         if not node.hasAttribute('pageSize'):
-            pageSize = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
+            page_size = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
         else:
             ps = [x.strip() for x in node.getAttribute('pageSize').replace(')', '').replace(
                 '(', '').split(',')]
-            pageSize = (utils.unit_get(ps[0]), utils.unit_get(ps[1]))
-        cm = reportlab.lib.units.cm
-        self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=pageSize, **utils.attr_get(node, ['leftMargin', 'rightMargin', 'topMargin', 'bottomMargin'], {
-                                                 'allowSplitting': 'int', 'showBoundary': 'bool', 'title': 'str', 'author': 'str', 'rotation': 'int'}))
+            page_size = (utils.unit_get(ps[0]), utils.unit_get(ps[1]))
+        # cm = reportlab.lib.units.cm
+        self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=page_size, **utils.attr_get(
+            node,
+            ['leftMargin', 'rightMargin', 'topMargin', 'bottomMargin'],
+            {'allowSplitting': 'int', 'showBoundary': 'bool', 'title': 'str', 'author': 'str', 'rotation': 'int'}))
         self.page_templates = []
         self.styles = doc.styles
         self.doc = doc
@@ -103,8 +105,10 @@ class RmlTemplate(object):
         for pt in pts:
             frames = []
             for frame_el in pt.getElementsByTagName('frame'):
-                frame = platypus.Frame(
-                    **(utils.attr_get(frame_el, ['x1', 'y1', 'width', 'height', 'leftPadding', 'rightPadding', 'bottomPadding', 'topPadding'], {'id': 'text', 'showBoundary': 'bool'})))
+                frame = platypus.Frame(**(utils.attr_get(
+                    frame_el,
+                    ['x1', 'y1', 'width', 'height', 'leftPadding', 'rightPadding', 'bottomPadding', 'topPadding'],
+                    {'id': 'text', 'showBoundary': 'bool'})))
                 frames.append(frame)
             gr = pt.getElementsByTagName('pageGraphics')
             if len(gr):
@@ -122,7 +126,7 @@ class RmlTemplate(object):
         self.doc_tmpl.build(fis)
 
 
-def parseString(data, fout=None):
+def parse_string(data, fout=None):
     r = RmlDoc(data.strip())
     if fout:
         fp = open(fout, "wb")

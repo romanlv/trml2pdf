@@ -19,9 +19,7 @@ import re
 
 from reportlab.lib import colors
 
-
 allcols = colors.getAllNamedColors()
-
 regex_t = re.compile('\(([0-9\.]*),([0-9\.]*),([0-9\.]*)\)')
 regex_h = re.compile('#([0-9a-zA-Z][0-9a-zA-Z])([0-9a-zA-Z][0-9a-zA-Z])([0-9a-zA-Z][0-9a-zA-Z])')
 

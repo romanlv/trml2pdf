@@ -1,6 +1,6 @@
 import unittest
 
-from trml2pdf.doc import parseString
+from trml2pdf.doc import parse_string
 from reportlab.platypus.doctemplate import LayoutError
 
 
@@ -30,4 +30,4 @@ class TestKeepInFrame(unittest.TestCase):
         </document>
         """
         with self.assertRaises(LayoutError):
-            parseString(rml)
+            parse_string(rml)

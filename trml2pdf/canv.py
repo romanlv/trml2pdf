@@ -25,14 +25,12 @@ import copy
 import io
 import sys
 # 2. 3rd parties
+from six.moves import urllib
+from reportlab.lib.utils import ImageReader
+from reportlab.graphics.barcode import code128, qr
 # 3. local
 from . import color, flowable, utils
 
-#
-# Change this to UTF-8 if you plan tu use Reportlab's UTF-8 support
-#
-# encoding = 'latin1'
-# use utf8 for default
 encoding = 'UTF-8'
 
 
@@ -49,11 +47,11 @@ class RmlCanvas(object):
         for n in node.childNodes:
             if n.nodeType == n.ELEMENT_NODE:
                 if n.localName == 'pageNumber':
-                    countingFrom = utils.tuple_int_get(n, 'countingFrom', default=[0])[0]
-                    rc += str(self.canvas.getPageNumber() + countingFrom)
-            elif (n.nodeType == node.CDATA_SECTION_NODE):
+                    counting_from = utils.tuple_int_get(n, 'countingFrom', default=[0])[0]
+                    rc += str(self.canvas.getPageNumber() + counting_from)
+            elif n.nodeType == node.CDATA_SECTION_NODE:
                 rc += n.data
-            elif (n.nodeType == node.TEXT_NODE):
+            elif n.nodeType == node.TEXT_NODE:
                 rc += n.data
         return rc.encode(encoding)
 
@@ -87,7 +85,6 @@ class RmlCanvas(object):
 
     def _curves(self, node):
         line_str = utils.text_get(node).split()
-
         while len(line_str) > 7:
             self.canvas.bezier(*[utils.unit_get(l) for l in line_str[0:8]])
             line_str = line_str[8:]
@@ -124,12 +121,12 @@ class RmlCanvas(object):
 
     def _circle(self, node):
         self.canvas.circle(x_cen=utils.unit_get(node.getAttribute('x')), y_cen=utils.unit_get(node.getAttribute(
-            'y')), r=utils.unit_get(node.getAttribute('radius')), **utils.attr_get(node, [], {'fill': 'bool', 'stroke': 'bool'}))
+            'y')), r=utils.unit_get(node.getAttribute('radius')),
+                           **utils.attr_get(node, [], {'fill': 'bool', 'stroke': 'bool'}))
 
     def _place(self, node):
         flows = flowable.RmlFlowable(self.doc).render(node)
         infos = utils.attr_get(node, ['x', 'y', 'width', 'height'])
-
         infos['y'] += infos['height']
         for flow in flows:
             w, h = flow.wrap(infos['width'], infos['height'])
@@ -160,23 +157,18 @@ class RmlCanvas(object):
             self.canvas.setDash(dashes)
 
     def _image(self, node):
-        from six.moves import urllib
-
-        from reportlab.lib.utils import ImageReader
         u = urllib.request.urlopen("file:" + str(node.getAttribute('file')))
         s = io.BytesIO()
         s.write(u.read())
         s.seek(0)
         img = ImageReader(s)
         (sx, sy) = img.getSize()
-
         args = {}
         for tag in ('width', 'height', 'x', 'y'):
             if node.hasAttribute(tag):
                 # if not utils.unit_get(node.getAttribute(tag)):
                 #     continue
                 args[tag] = utils.unit_get(node.getAttribute(tag))
-
         if node.hasAttribute("preserveAspectRatio"):
             args["preserveAspectRatio"] = True
         if node.hasAttribute('mask'):
@@ -193,15 +185,12 @@ class RmlCanvas(object):
         self.canvas.drawImage(img, **args)
 
     def _barcode(self, node):
-        from reportlab.graphics.barcode import code128, qr
-
         createargs = {}
         drawargs = {}
         code_type = node.getAttribute('code')
         for tag in ('x', 'y'):
             if node.hasAttribute(tag):
                 drawargs[tag] = utils.unit_get(node.getAttribute(tag))
-
         if code_type == 'Code128':
             for tag in ('barWidth', 'barHeight'):
                 if node.hasAttribute(tag):
@@ -212,7 +201,6 @@ class RmlCanvas(object):
                 if node.hasAttribute(tag):
                     createargs[tag] = utils.unit_get(node.getAttribute(tag))
             barcode = qr.QrCode(node.getAttribute('value'), **createargs)
-
         barcode.drawOn(self.canvas, **drawargs)
 
     def _path(self, node):
@@ -231,7 +219,7 @@ class RmlCanvas(object):
                         while len(pos) < 6:
                             pos.append(utils.unit_get(vals.pop(0)))
                         self.path.curveTo(*pos)
-            elif (n.nodeType == node.TEXT_NODE):
+            elif n.nodeType == node.TEXT_NODE:
                 # Not sure if I must merge all TEXT_NODE ?
                 data = n.data.split()
                 while len(data) > 1:
@@ -245,37 +233,39 @@ class RmlCanvas(object):
 
     def _letterBoxes(self, node):
         # 1. get args (args.update(style))
-        attrs = utils.attr_get(node, ('x', 'y', 'boxWidth', 'boxHeight', 'lineWidth', 'fontSize', 'labelFontSize', 'labelOffsetX', 'labelOffsetY',), {
-                'style': 'str',
-                'count': 'int',
-                'boxStrokeColor': 'str',
-                'boxFillColor': 'str',
-                'textColor': 'str',
-                'fontName': 'str',
-                'label': 'str',
-                'labelTextColor': 'str',
-                'labelFontName': 'str',
-        })
+        attrs = utils.attr_get(node, (
+            'x', 'y', 'boxWidth', 'boxHeight', 'lineWidth', 'fontSize', 'labelFontSize', 'labelOffsetX',
+            'labelOffsetY',), {
+                                   'style': 'str',
+                                   'count': 'int',
+                                   'boxStrokeColor': 'str',
+                                   'boxFillColor': 'str',
+                                   'textColor': 'str',
+                                   'fontName': 'str',
+                                   'label': 'str',
+                                   'labelTextColor': 'str',
+                                   'labelFontName': 'str',
+                               })
         # 2. apply style (hack)
-        if ('style' in attrs):
+        if 'style' in attrs:
             # FIXME: error
             args = copy.deepcopy(self.styles.box_styles[attrs['style']].__dict__)
-            #args = copy.deepcopy(self.box_styles[attrs['style']].__dict__)
+            # args = copy.deepcopy(self.box_styles[attrs['style']].__dict__)
             args.update(attrs)
         else:
             args = attrs
-        # 3. draw:
-        # rect (x, y, width, height, stroke:bool, fill=bool) + setFillColor(color) + setStrokeColor(color) + setLineWidth(lineWidth)
-        # drawString: x, y + setFont(name, size)|setFontSize()|canvas._fontsize + setFillColor(textColor)
+        # 3. draw: rect (x, y, width, height, stroke:bool, fill=bool) + setFillColor(color) + setStrokeColor(color) +
+        # setLineWidth(lineWidth) drawString: x, y + setFont(name, size)|setFontSize()|canvas._fontsize +
+        # setFillColor(textColor)
         #
         self.canvas.saveState()
-        if ('lineWidth' in args):
+        if 'lineWidth' in args:
             self.canvas.setLineWidth(args['lineWidth'])
-        if (('fontSize' in args) and not ('fontName' in args)):
+        if ('fontSize' in args) and not ('fontName' in args):
             self.canvas.setFontSize(args['fontSize'])
-        #print "FONT NAME:", self.canvas._fontname
-        elif ('fontName' in args):
-            self.canvas.setFont(args['fontName'], args.get('fontSize'), self.canvas._fontsize)	# hack
+        # print "FONT NAME:", self.canvas._fontname
+        elif 'fontName' in args:
+            self.canvas.setFont(args['fontName'], args.get('fontSize'), self.canvas._fontsize)  # hack
         # 4. calc: boxWidth, boxHeight
         if not ('boxWidth' in args):
             args['boxWidth'] = self.canvas.stringWidth('W', self.canvas._fontname, self.canvas._fontsize)
@@ -292,31 +282,32 @@ class RmlCanvas(object):
             x1 = x + i * w
             # 5.1. rect
             self.canvas.saveState()
-            if ('boxFillColor' in args):
+            if 'boxFillColor' in args:
                 self.canvas.setFillColor(color.get(args['boxFillColor']))
-            if ('boxStrokeColor' in args):
+            if 'boxStrokeColor' in args:
                 self.canvas.setStrokeColor(color.get(args['boxStrokeColor']))
-            self.canvas.rect(x = x1, y = y, width = w, height = h, fill = ('boxFillColor' in args))
+            self.canvas.rect(x=x1, y=y, width=w, height=h, fill=('boxFillColor' in args))
             self.canvas.restoreState()
             # 5.2. symbol
             self.canvas.saveState()
-            if ('textColor' in args):
+            if 'textColor' in args:
                 self.canvas.setFillColor(color.get(args['textColor']))
-            if (i < len(text)):
+            if i < len(text):
                 self.canvas.drawCentredString(float(x1 + (float(w) / 2.0)), float(y) + dy, text=text[i])
             self.canvas.restoreState()
         self.canvas.restoreState()
         # 5.3. label
-        if ('label' in args):
+        if 'label' in args:
             self.canvas.saveState()
-            if (('labelFontSize' in args) and not ('labelFontName' in args)):
+            if ('labelFontSize' in args) and not ('labelFontName' in args):
                 self.canvas.setFontSize(args['labelFontSize'])
-            elif ('labelFontName' in args):
-                self.canvas.setFont(args['labelFontName'], args.get('labelFontSize'), self.canvas._fontsize)	# hack
-            if ('labelTextColor' in args):
+            elif 'labelFontName' in args:
+                self.canvas.setFont(args['labelFontName'], args.get('labelFontSize'), self.canvas._fontsize)  # hack
+            if 'labelTextColor' in args:
                 self.canvas.setFillColor(color.get(args['labelTextColor']))
             y += args.get('labelOffsetY', 0)
-            self.canvas.drawString(x = x + args.get('labelOffsetX', 0), y = y + args.get('labelOffsetY', 0), text=args['label'])
+            self.canvas.drawString(x=x + args.get('labelOffsetX', 0), y=y + args.get('labelOffsetY', 0),
+                                   text=args['label'])
             # TODO: align, default OffsetX
             self.canvas.restoreState()
 
@@ -333,7 +324,8 @@ class RmlCanvas(object):
             'curves': self._curves,
             'fill': lambda node: self.canvas.setFillColor(color.get(node.getAttribute('color'))),
             'stroke': lambda node: self.canvas.setStrokeColor(color.get(node.getAttribute('color'))),
-            'setFont': lambda node: self.canvas.setFont(node.getAttribute('name'), utils.unit_get(node.getAttribute('size'))),
+            'setFont': lambda node: self.canvas.setFont(node.getAttribute('name'),
+                                                        utils.unit_get(node.getAttribute('size'))),
             'place': self._place,
             'circle': self._circle,
             'lineMode': self._line_mode,
@@ -362,6 +354,6 @@ class RmlDraw(object):
 
     def render(self, canvas, doc):
         canvas.saveState()
-        cnv = RmlCanvas(canvas, None, self)   # can be (canvas, doc, self)?
+        cnv = RmlCanvas(canvas, None, self)  # can be (canvas, doc, self)?
         cnv.render(self.node)
         canvas.restoreState()

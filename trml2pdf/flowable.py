@@ -50,18 +50,18 @@ class RmlFlowable(object):
         for n in node.childNodes:
             if n.nodeType == node.ELEMENT_NODE:
                 if n.localName == 'getName':
-                    newNode = self.doc.dom.createTextNode(
+                    new_node = self.doc.dom.createTextNode(
                         self.styles.names.get(n.getAttribute('id'), 'Unknown name'))
-                    node.insertBefore(newNode, n)
+                    node.insertBefore(new_node, n)
                     node.removeChild(n)
                 if n.localName == 'pageNumber':
                     rc += '<pageNumber/>'  # TODO: change this !
                 else:
                     self._textual(n)
                 rc += n.toxml()
-            elif (n.nodeType == node.CDATA_SECTION_NODE):
+            elif n.nodeType == node.CDATA_SECTION_NODE:
                 rc += n.data
-            elif (n.nodeType == node.TEXT_NODE):
+            elif n.nodeType == node.TEXT_NODE:
                 rc += n.toxml()
         return text_type(rc)
 
@@ -131,19 +131,20 @@ class RmlFlowable(object):
     def _illustration(self, node):
         class Illustration(platypus.flowables.Flowable):
 
-            def __init__(self, node, styles):
-                self.node = node
+            def __init__(self, nod, styles):
+                self.node = nod
                 self.styles = styles
-                self.width = utils.unit_get(node.getAttribute('width'))
-                self.height = utils.unit_get(node.getAttribute('height'))
+                self.width = utils.unit_get(nod.getAttribute('width'))
+                self.height = utils.unit_get(nod.getAttribute('height'))
 
             def wrap(self, *args):
-                return (self.width, self.height)
+                return self.width, self.height
 
             def draw(self):
-                canvas = self.canv
+                # canvas = self.canv
                 drw = canv.RmlDraw(self.node, self.styles)
                 drw.render(self.canv, None)
+
         return Illustration(node, self.styles)
 
     def _flowable(self, node):
@@ -156,10 +157,12 @@ class RmlFlowable(object):
             return None
         elif node.localName == 'xpre':
             style = self.styles.para_style_get(node)
-            return platypus.XPreformatted(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int', 'frags': 'int'})))
+            return platypus.XPreformatted(self._textual(node), style, **(
+                utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int', 'frags': 'int'})))
         elif node.localName == 'pre':
             style = self.styles.para_style_get(node)
-            return platypus.Preformatted(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int'})))
+            return platypus.Preformatted(self._textual(node), style,
+                                         **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int'})))
         elif node.localName == 'illustration':
             return self._illustration(node)
         elif node.localName == 'blockTable':
@@ -181,7 +184,8 @@ class RmlFlowable(object):
             style = styles['Heading3']
             return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str'})))
         elif node.localName == 'image':
-            return platypus.Image(node.getAttribute('file'), mask=(250, 255, 250, 255, 250, 255), **(utils.attr_get(node, ['width', 'height', 'preserveAspectRatio', 'anchor'])))
+            return platypus.Image(node.getAttribute('file'), mask=(250, 255, 250, 255, 250, 255),
+                                  **(utils.attr_get(node, ['width', 'height', 'preserveAspectRatio', 'anchor'])))
         elif node.localName == 'spacer':
             if node.hasAttribute('width'):
                 width = utils.unit_get(node.getAttribute('width'))
@@ -215,8 +219,8 @@ class RmlFlowable(object):
             if name:
                 kwargs["name"] = name
             kwargs.update(
-                utils.attr_get(node, ['maxWidth','maxHeight', 'mergeSpace'],
-                               {'maxWidth': 'int','maxHeight': 'int'}))
+                utils.attr_get(node, ['maxWidth', 'maxHeight', 'mergeSpace'],
+                               {'maxWidth': 'int', 'maxHeight': 'int'}))
             return platypus.KeepInFrame(**kwargs)
         else:
             sys.stderr.write(

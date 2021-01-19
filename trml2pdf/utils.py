@@ -28,6 +28,7 @@ def text_get(node):
             rc = rc + node.data
     return rc
 
+
 units = [
     (re.compile('^(-?[0-9\.]+)\s*in$'), reportlab.lib.units.inch),
     (re.compile('^(-?[0-9\.]+)\s*cm$'), reportlab.lib.units.cm),

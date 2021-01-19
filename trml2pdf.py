@@ -10,7 +10,7 @@
 import os
 import sys
 
-from trml2pdf.doc import parseString
+from trml2pdf.doc import parse_string
 
 __help = \
     "Usage: trml2pdf input.rml >output.pdf\n\
@@ -24,7 +24,7 @@ def main():
     # FIXME: dirty hack
     else:
         # print(parseString(open(sys.argv[1], 'r').read()))
-        os.write(1, parseString(open(sys.argv[1], 'rt').read()))
+        os.write(1, parse_string(open(sys.argv[1], 'rt').read()))
 
 
 if __name__ == "__main__":
