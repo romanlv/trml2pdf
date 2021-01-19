@@ -1,0 +1,134 @@
+<!-- simplified test_007_forms.rml -->
+<!-- edited with XML Spy v4.0 U (http://www.xmlspy.com) by Andy Robinson (Reportlab Inc.) -->
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document filename="ex_letterboxes.pdf">
+	<template pageSize="(595, 842)" leftMargin="72" showBoundary="1">
+        <pageTemplate id="main" pageSize="a4 portrait">
+            <pageGraphics>
+                <setFont name="Helvetica-Bold" size="18"/>
+                <drawString x="35" y="783">RML Example 12: Forms</drawString>
+            </pageGraphics>
+            <frame id="second" x1="35" y1="45" width="525" height="590"/>
+        </pageTemplate>
+        <pageTemplate id="main2" pageSize="a4 portrait">
+            <pageGraphics>
+                <setFont name="Helvetica-Bold" size="18"/>
+                <drawString x="35" y="783">RML Example 0: Catchforms</drawString>
+            </pageGraphics>
+            <frame id="second" x1="35" y1="45" width="525" height="685"/>
+        </pageTemplate>
+	</template>
+	<stylesheet>
+		<initialize>
+			<alias id="style.normal" value="style.Normal"/>
+		</initialize>
+		<paraStyle name="normal" fontName="Helvetica" fontSize="10" leading="12" spaceAfter="10"/>
+		<paraStyle name="intro"  fontName="Helvetica" fontSize="12" leading="12" spaceAfter="12"/>
+		<boxStyle name="special" labelTextColor="green" textColor="green" boxFillColor="paleturquoise"/>
+		<boxStyle name="special2" labelTextColor="red" boxFillColor="None"/>
+	</stylesheet>
+	<story>
+        <setNextTemplate name="main"/>
+		<illustration width="8cm" height="2cm">
+			<letterBoxes x="1cm" y="0" count="15">letters &amp; stuff</letterBoxes>
+		</illustration>
+		<para style="normal">The next two test whether style inheritance works for formStyles</para>
+		<illustration width="8cm" height="3cm">
+			<letterBoxes style="special" x="1cm" y="1.5cm" count="25" label="I should be green">Uses style "special"</letterBoxes>
+			<letterBoxes style="special2" x="1cm" y="0" count="25" label="I should be red with transparent background">Uses style 'special2'</letterBoxes>
+		</illustration>
+
+		<para style="normal">Fancy comb marks..</para>
+		<illustration width="8cm" height="2cm">
+			<letterBoxes x="1cm" y="0" count="15" boxWidth="0.4cm" boxHeight="1cm" label="This has fancy combs on" combHeight="0.25">Uses combHeight</letterBoxes>
+		</illustration>
+
+		<nextPage/>
+		<para style="normal">Spaces between boxes: regular using boxGap, and variable spacing with boxExtraGaps.
+		These are used to overlay forms designed by others.  Common cases include day/month/year, currency boxes
+		with a space for the decimal point (nnn.pp), or boxes for national insurance numbers which like to 
+		break things up e.g. AA-11-11-11-B.
+		boxGap adds extra horizontal space between every box.  boxExtraGaps takes a string containing multiple,
+		comma-separated structures such as <i>3:5</i> to add 5 points after box 3, or <i> 2:5,4:5,6:4</i> to add 5 points
+		after boxes 2 and 4 and 4 points after box 6.
+		
+		</para>
+		<illustration width="8cm" height="10cm">
+			<letterBoxes 
+				x="1cm" 
+				y="8cm" 
+				count="8" 
+				boxWidth="0.4cm" 
+				boxGap="0.1cm" 
+				boxHeight="0.6cm"
+				boxExtraGaps="2:0.2cm,4:0.2cm"
+				label="custom spacing for a date field"
+				>23082007</letterBoxes>
+
+			<letterBoxes 
+				x="1cm" 
+				y="6.9cm" 
+				count="6" 
+				boxWidth="0.4cm" 
+				boxGap="0.1cm" 
+				boxExtraGaps="4:0.2cm"
+				boxHeight="0.6cm" 
+				label="custom spacing for currency fields"
+				alignment="right"
+				>123499</letterBoxes>
+
+			<letterBoxes 
+				x="1cm" 
+				y="6.2cm" 
+				count="6" 
+				boxWidth="0.4cm" 
+				boxGap="0.1cm" 
+				boxExtraGaps="4:0.2cm"
+				boxHeight="0.6cm" 
+				alignment="right"
+				>45675</letterBoxes>
+		
+			<letterBoxes 
+				x="1cm" 
+				y="5cm" 
+				count="9" 
+				boxWidth="0.4cm" 
+				boxGap="0.1cm" 
+				boxExtraGaps="2:0.2cm,4:0.1cm,6:0.1cm,8:0.2cm"
+				boxHeight="0.6cm" 
+				label="custom spacing for UK N.I. numbers"
+				>AB123456A</letterBoxes>
+
+			<letterBoxes 
+				x="1cm" 
+				y="3cm" 
+				count="9" 
+				boxWidth="0.4cm" 
+				boxExtraGaps="2:0.2cm,4:0.1cm,6:0.1cm,8:0.2cm"
+				boxHeight="0.6cm" 
+				label="quick check that non-gap ones draw OK too; create extra lines if needed."
+				>AB123456A</letterBoxes>
+
+			<letterBoxes 
+				x="1cm" 
+				y="1cm" 
+				count="9" 
+				boxWidth="0.4cm" 
+				boxGap="0.0cm"
+				boxHeight="0.5cm" 
+				label="Trying to turn off the top edge"
+				strokeTop="0"
+				combHeight="1.00"
+				>AB123456A</letterBoxes>
+		</illustration>
+
+		<spacer length="1cm"/>
+
+		<illustration width="8cm" height="2cm">
+			<letterBoxes x="1cm" y="0" count="15" boxWidth="0.4cm" boxHeight="1cm" 
+			boxStrokeColor="chartreuse" boxFillColor="lemonchiffon" textColor="pink" lineWidth="2" 
+			labelFontName="Helvetica-BoldOblique" labelTextColor="purple" labelFontSize="16"
+			label="Label in big purple italic font">veryLongletterBoxes</letterBoxes>
+		</illustration>
+	</story>
+</document>
