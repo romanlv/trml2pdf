@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 # python setup.py sdist upload -r pypi
 setup(
     name='trml2pdf',
-    version='0.5.0',
+    version='0.6rc1',
     description='''Tiny RML2PDF is a tool to easily create PDF document using special HTML-like markup language. It converts a RML, an XML dialect that lets you define the precise appearance of a printed document, to a PDF.''',
     keywords='pdf reportlab',
     platforms=["any"],
