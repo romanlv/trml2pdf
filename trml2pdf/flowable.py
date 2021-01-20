@@ -26,7 +26,7 @@ from six import text_type
 # 2. 3rd parties
 from reportlab import platypus
 from reportlab.graphics.barcode import code39
-import reportlab
+import reportlab.lib.styles
 # 3. local
 from . import canv, utils
 
@@ -69,11 +69,7 @@ class RmlFlowable(object):
         return text_type(rc)
 
     def _list(self, node):
-        if node.hasAttribute('style'):
-            list_style = self.styles.list_styles[node.getAttribute('style')]
-        else:
-            list_style = platypus.flowables.ListStyle('Default')
-
+        list_style = self.styles.list_styles[node.getAttribute('style')] if node.hasAttribute('style') else platypus.flowables.ListStyle('Default')
         list_items = []
         for li in _child_get(node, 'li'):
             flow = []
@@ -86,12 +82,9 @@ class RmlFlowable(object):
                         li.getAttribute('style')]
                 else:
                     li_style = reportlab.lib.styles.getSampleStyleSheet()['Normal']
-
                 flow = platypus.paragraph.Paragraph(self._textual(li), li_style)
-
             list_item = platypus.ListItem(flow)
             list_items.append(list_item)
-
         return platypus.ListFlowable(list_items, style=list_style, start=list_style.__dict__.get('start'))
 
     def _table(self, node):
@@ -167,51 +160,36 @@ class RmlFlowable(object):
                            {'maxWidth': 'int', 'maxHeight': 'int'}))
         return platypus.KeepInFrame(**kwargs)
 
-    def _flowable(self, node):
-        """
-        FIXME: mk dict
-        """
-        if node.localName == 'para':
-            return platypus.Paragraph(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str'})))
-        elif node.localName == 'name':
-            return self.__name(node)
-        elif node.localName == 'xpre':
-            return platypus.XPreformatted(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int', 'frags': 'int'})))
-        elif node.localName == 'pre':
-            return platypus.Preformatted(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int'})))
-        elif node.localName == 'illustration':
-            return self._illustration(node)
-        elif node.localName == 'blockTable':
-            return self._table(node)
-        elif node.localName == 'title':
-            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Title'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
-        elif node.localName == 'h1':
-            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading1'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
-        elif node.localName == 'h2':
-            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading2'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
-        elif node.localName == 'h3':
-            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading3'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
-        elif node.localName == 'image':
-            return platypus.Image(node.getAttribute('file'), mask=(250, 255, 250, 255, 250, 255), **(utils.attr_get(node, ['width', 'height', 'preserveAspectRatio', 'anchor'])))
-        elif node.localName == 'spacer':
-            return platypus.Spacer(width=utils.unit_get(node.getAttribute('width') if node.hasAttribute('width') else '1cm'), height=utils.unit_get(node.getAttribute('length')))
-        elif node.localName == 'barCode':
-            return code39.Extended39(self._textual(node))
-        elif node.localName in ['pageBreak', 'nextPage']:
-            return platypus.PageBreak()
-        elif node.localName == 'condPageBreak':
-            return platypus.CondPageBreak(**(utils.attr_get(node, ['height'])))
-        elif node.localName == 'setNextTemplate':
-            return platypus.NextPageTemplate(str(node.getAttribute('name')))
-        elif node.localName == 'nextFrame':
-            return platypus.CondPageBreak(1000)  # TODO: change the 1000 !
-        elif node.localName == 'ul':
-            return self._list(node)
-        elif node.localName == 'keepInFrame':
-            return self.__keep_in_frame(node)
+    def _flowable(self, n):
+        tags = {
+            'name': lambda node: self.__name(node),
+            'para': lambda node: platypus.Paragraph(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str'}))),
+            'xpre': lambda node: platypus.XPreformatted(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int', 'frags': 'int'}))),
+            'pre': lambda node: platypus.Preformatted(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int'}))),
+            'illustration': lambda node: self._illustration(node),
+            'blockTable': lambda node: self._table(node),
+            'title': lambda node: platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Title'], **(utils.attr_get(node, [], {'bulletText': 'str'}))),
+            'h1': lambda node: platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading1'], **(utils.attr_get(node, [], {'bulletText': 'str'}))),
+            'h2': lambda node: platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading2'], **(utils.attr_get(node, [], {'bulletText': 'str'}))),
+            'h3': lambda node: platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading3'], **(utils.attr_get(node, [], {'bulletText': 'str'}))),
+            'image': lambda node: platypus.Image(node.getAttribute('file'), mask=(250, 255, 250, 255, 250, 255), **(utils.attr_get(node, ['width', 'height', 'preserveAspectRatio', 'anchor']))),
+            'spacer': lambda node: platypus.Spacer(
+                width=utils.unit_get(node.getAttribute('width') if node.hasAttribute('width') else '1cm'),
+                height=utils.unit_get(node.getAttribute('length'))),
+            'barCode': lambda node: code39.Extended39(self._textual(node)),
+            'pageBreak': lambda node: platypus.PageBreak(),
+            'nextPage': lambda node: platypus.PageBreak(),
+            'condPageBreak': lambda node: platypus.CondPageBreak(**(utils.attr_get(node, ['height']))),
+            'setNextTemplate': lambda node: platypus.NextPageTemplate(str(node.getAttribute('name'))),
+            'nextFrame': lambda node: platypus.CondPageBreak(1000),  # TODO: change the 1000 !
+            'ul': lambda node: self._list(node),
+            'keepInFrame': lambda node: self.__keep_in_frame(node),
+        }
+        retvalue = tags.get(n.localName)
+        if retvalue:
+            return retvalue(n)
         else:
-            sys.stderr.write(
-                'Warning: flowable not yet implemented: %s !\n' % (node.localName,))
+            sys.stderr.write('Warning: flowable not yet implemented: %s !\n' % (n.localName,))
 
     def render(self, node_story):
         story = []

@@ -25,7 +25,8 @@ import copy
 import sys
 # 2. 3rd parties
 from reportlab import platypus
-import reportlab
+import reportlab.lib.enums
+import reportlab.lib.styles
 # 3. local
 from . import color, utils
 
