@@ -21,7 +21,6 @@ def main():
     if len(sys.argv) == 1 or sys.argv[1] == '--help':
         print(__help)
         sys.exit(0)
-    # FIXME: dirty hack
     else:
         # print(parseString(open(sys.argv[1], 'r').read()))
         os.write(1, parse_string(open(sys.argv[1], 'rt').read()))

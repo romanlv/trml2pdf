@@ -1,12 +1,13 @@
 *.pyc
 .env/*
 .eggs/*
-dist/*
-build/*
-*.egg-info/*
 .tox/*
 .idea/*
 .results.txt
+dist/*
+build/*
+tests/output/*.pdf
+*.egg-info/*
 *.orig
 *.log
 *.swp
@@ -15,3 +16,4 @@ build/*
 \#*\#
 .\#*
 *.bak
+2do.md

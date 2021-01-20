@@ -57,7 +57,7 @@ def docinit(els):
 
 class RmlDoc(object):
 
-    def __init__(self, data):
+    def __init__(self, data: str):
         self.dom = xml.dom.minidom.parseString(data)
         self.filename = self.dom.documentElement.getAttribute('filename')
         self.canvas = None
@@ -126,7 +126,7 @@ class RmlTemplate(object):
         self.doc_tmpl.build(fis)
 
 
-def parse_string(data, fout=None):
+def parse_string(data: str, fout=None):
     r = RmlDoc(data.strip())
     if fout:
         fp = open(fout, "wb")
