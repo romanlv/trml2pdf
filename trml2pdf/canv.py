@@ -233,19 +233,21 @@ class RmlCanvas(object):
 
     def _letterBoxes(self, node):
         # 1. get args (args.update(style))
-        attrs = utils.attr_get(node, (
-            'x', 'y', 'boxWidth', 'boxHeight', 'lineWidth', 'fontSize', 'labelFontSize', 'labelOffsetX',
-            'labelOffsetY',), {
-                                   'style': 'str',
-                                   'count': 'int',
-                                   'boxStrokeColor': 'str',
-                                   'boxFillColor': 'str',
-                                   'textColor': 'str',
-                                   'fontName': 'str',
-                                   'label': 'str',
-                                   'labelTextColor': 'str',
-                                   'labelFontName': 'str',
-                               })
+        attrs = utils.attr_get(
+            node,
+            ('x', 'y', 'boxWidth', 'boxHeight', 'lineWidth', 'fontSize', 'labelFontSize', 'labelOffsetX',
+             'labelOffsetY'),
+            {
+                'style': 'str',
+                'count': 'int',
+                'boxStrokeColor': 'str',
+                'boxFillColor': 'str',
+                'textColor': 'str',
+                'fontName': 'str',
+                'label': 'str',
+                'labelTextColor': 'str',
+                'labelFontName': 'str',
+            })
         # 2. apply style (hack)
         if 'style' in attrs:
             # FIXME: error
@@ -339,7 +341,7 @@ class RmlCanvas(object):
         }
         for nd in node.childNodes:
             if nd.nodeType == nd.ELEMENT_NODE:
-                for tag in tags:
+                for tag in tags:    # FIXME: too slow?
                     if nd.localName == tag:
                         tags[tag](nd)
                         break

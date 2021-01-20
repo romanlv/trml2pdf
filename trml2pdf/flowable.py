@@ -45,6 +45,9 @@ class RmlFlowable(object):
         self.doc = doc
         self.styles = doc.styles
 
+    def __name(self, node):
+        self.styles.names[node.getAttribute('id')] = node.getAttribute('value')
+
     def _textual(self, node):
         rc = ''
         for n in node.childNodes:
@@ -147,52 +150,51 @@ class RmlFlowable(object):
 
         return Illustration(node, self.styles)
 
+    def __keep_in_frame(self, node):
+        kwargs = {
+            "maxWidth": 0,
+            "maxHeight": 0,
+            "content": self.render(node),
+        }
+        mode = node.getAttribute("onOverflow")
+        if mode:
+            kwargs["mode"] = mode
+        name = node.getAttribute("id")
+        if name:
+            kwargs["name"] = name
+        kwargs.update(
+            utils.attr_get(node, ['maxWidth', 'maxHeight', 'mergeSpace'],
+                           {'maxWidth': 'int', 'maxHeight': 'int'}))
+        return platypus.KeepInFrame(**kwargs)
+
     def _flowable(self, node):
+        """
+        FIXME: mk dict
+        """
         if node.localName == 'para':
-            style = self.styles.para_style_get(node)
-            return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str'})))
+            return platypus.Paragraph(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str'})))
         elif node.localName == 'name':
-            self.styles.names[
-                node.getAttribute('id')] = node.getAttribute('value')
-            return None
+            return self.__name(node)
         elif node.localName == 'xpre':
-            style = self.styles.para_style_get(node)
-            return platypus.XPreformatted(self._textual(node), style, **(
-                utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int', 'frags': 'int'})))
+            return platypus.XPreformatted(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int', 'frags': 'int'})))
         elif node.localName == 'pre':
-            style = self.styles.para_style_get(node)
-            return platypus.Preformatted(self._textual(node), style,
-                                         **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int'})))
+            return platypus.Preformatted(self._textual(node), self.styles.para_style_get(node), **(utils.attr_get(node, [], {'bulletText': 'str', 'dedent': 'int'})))
         elif node.localName == 'illustration':
             return self._illustration(node)
         elif node.localName == 'blockTable':
             return self._table(node)
         elif node.localName == 'title':
-            styles = reportlab.lib.styles.getSampleStyleSheet()
-            style = styles['Title']
-            return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str'})))
+            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Title'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
         elif node.localName == 'h1':
-            styles = reportlab.lib.styles.getSampleStyleSheet()
-            style = styles['Heading1']
-            return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str'})))
+            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading1'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
         elif node.localName == 'h2':
-            styles = reportlab.lib.styles.getSampleStyleSheet()
-            style = styles['Heading2']
-            return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str'})))
+            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading2'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
         elif node.localName == 'h3':
-            styles = reportlab.lib.styles.getSampleStyleSheet()
-            style = styles['Heading3']
-            return platypus.Paragraph(self._textual(node), style, **(utils.attr_get(node, [], {'bulletText': 'str'})))
+            return platypus.Paragraph(self._textual(node), reportlab.lib.styles.getSampleStyleSheet()['Heading3'], **(utils.attr_get(node, [], {'bulletText': 'str'})))
         elif node.localName == 'image':
-            return platypus.Image(node.getAttribute('file'), mask=(250, 255, 250, 255, 250, 255),
-                                  **(utils.attr_get(node, ['width', 'height', 'preserveAspectRatio', 'anchor'])))
+            return platypus.Image(node.getAttribute('file'), mask=(250, 255, 250, 255, 250, 255), **(utils.attr_get(node, ['width', 'height', 'preserveAspectRatio', 'anchor'])))
         elif node.localName == 'spacer':
-            if node.hasAttribute('width'):
-                width = utils.unit_get(node.getAttribute('width'))
-            else:
-                width = utils.unit_get('1cm')
-            length = utils.unit_get(node.getAttribute('length'))
-            return platypus.Spacer(width=width, height=length)
+            return platypus.Spacer(width=utils.unit_get(node.getAttribute('width') if node.hasAttribute('width') else '1cm'), height=utils.unit_get(node.getAttribute('length')))
         elif node.localName == 'barCode':
             return code39.Extended39(self._textual(node))
         elif node.localName in ['pageBreak', 'nextPage']:
@@ -206,26 +208,10 @@ class RmlFlowable(object):
         elif node.localName == 'ul':
             return self._list(node)
         elif node.localName == 'keepInFrame':
-            substory = self.render(node)
-            kwargs = {
-                "maxWidth": 0,
-                "maxHeight": 0,
-                "content": substory,
-            }
-            mode = node.getAttribute("onOverflow")
-            if mode:
-                kwargs["mode"] = mode
-            name = node.getAttribute("id")
-            if name:
-                kwargs["name"] = name
-            kwargs.update(
-                utils.attr_get(node, ['maxWidth', 'maxHeight', 'mergeSpace'],
-                               {'maxWidth': 'int', 'maxHeight': 'int'}))
-            return platypus.KeepInFrame(**kwargs)
+            return self.__keep_in_frame(node)
         else:
             sys.stderr.write(
                 'Warning: flowable not yet implemented: %s !\n' % (node.localName,))
-            return None
 
     def render(self, node_story):
         story = []
