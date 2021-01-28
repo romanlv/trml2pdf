@@ -17,7 +17,7 @@
 
 import re
 
-import reportlab
+import reportlab.lib.units
 from six import text_type
 
 

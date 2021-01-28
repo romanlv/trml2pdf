@@ -173,8 +173,7 @@ class RmlStyles(object):
                     style.getAttribute('name')] = _box_style_get(style)
             for variable in node.getElementsByTagName('initialize'):
                 for name in variable.getElementsByTagName('name'):
-                    self.names[name.getAttribute('id')] = name.getAttribute(
-                        'value')
+                    self.names[name.getAttribute('id')] = name.getAttribute('value')
 
     def _list_style_get(self, node):
         style = reportlab.lib.styles.ListStyle('Default')

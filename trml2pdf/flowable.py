@@ -177,7 +177,7 @@ class RmlFlowable(object):
                 width=utils.unit_get(node.getAttribute('width') if node.hasAttribute('width') else '1cm'),
                 height=utils.unit_get(node.getAttribute('length'))),
             'barCode': lambda node: code39.Extended39(self._textual(node)),
-            'pageBreak': lambda node: platypus.PageBreak(),
+            'pageBreak': lambda node: platypus.PageBreak(),     # FIXME: it is not in RML std
             'nextPage': lambda node: platypus.PageBreak(),
             'condPageBreak': lambda node: platypus.CondPageBreak(**(utils.attr_get(node, ['height']))),
             'setNextTemplate': lambda node: platypus.NextPageTemplate(str(node.getAttribute('name'))),
