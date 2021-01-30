@@ -16,3 +16,4 @@ tests/output/*.pdf
 \#*\#
 .\#*
 *.bak
+_doc/*

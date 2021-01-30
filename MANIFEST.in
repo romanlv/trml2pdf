@@ -1,1 +1,1 @@
-include *.txt *.md
+include LICENSE.txt README.md doc/*
