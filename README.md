@@ -17,8 +17,8 @@ Examples
 Create a PDF file:
 
 ```python
-import trml2pdf.doc
-print trml2pdf.doc.parse_string(file('file.rml','r').read())
+import trml2pdf
+print trml2pdf.parseString(open('file.rml','rt').read())
 ```
  
 If you are using this for Django you can dynamically create an .rml file with the template system and then render it.
@@ -26,13 +26,13 @@ If you are using this for Django you can dynamically create an .rml file with th
 ```python
 from django.template.loader import get_template
 from django.template.context import Context
-import trml2pdf.doc
+import trml2pdf
 
 data = {'key1': 'foo'}
 template = get_template('template.rml')
 context = Context(data)
 xmlstring = template.render(context)
-pdfstr = trml2pdf.doc.parse_string(xmlstring)
+pdfstr = trml2pdf.parseString(xmlstring)
 ```
 
 # Looking for maintainer 
