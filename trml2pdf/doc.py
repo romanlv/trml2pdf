@@ -124,16 +124,3 @@ class RmlTemplate(object):
         r = flowable.RmlFlowable(self.doc)
         fis = r.render(node_story)
         self.doc_tmpl.build(fis)
-
-
-def parse_string(data: str, fout=None):
-    r = RmlDoc(data.strip())
-    if fout:
-        fp = open(fout, "wb")
-        r.render(fp)
-        fp.close()
-        return fout
-    else:
-        fp = io.BytesIO()
-        r.render(fp)
-        return fp.getvalue()

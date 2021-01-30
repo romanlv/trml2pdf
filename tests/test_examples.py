@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from trml2pdf.doc import parse_string  # dev mode: python setup.py develop
+from trml2pdf import parseString  # dev mode: python setup.py develop
 
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
@@ -26,7 +26,7 @@ class TestExamples(unittest.TestCase):
                 path = name  # '{}/{}'.format(INPUT_DIR, name)
                 print('running: {}'.format(path))
                 with open(path, "r") as f:
-                    output = parse_string(f.read())
+                    output = parseString(f.read())
                 self.assertIsNotNone(output)
                 with open(os.path.join(TESTS_DIR, OUTPUT_DIR, name[:-3]+"pdf"), "wb") as of:
                     of.write(output)
@@ -35,7 +35,7 @@ class TestExamples(unittest.TestCase):
 # class TestOutput(unittest.TestCase):
 #     def test_bug8(self):
 #         with open(TESTS_DIR + '/templates/bug_8.rml', "r") as f:
-#             output = parse_string(f.read())
+#             output = parseString(f.read())
 #             print(output)
 #         self.assertNotIn('\\n', text_type(output))  # not so easy to test PDF content, it is encoded
 #         with open(TESTS_DIR + '/templates/bug8.pdf', 'wb') as w:

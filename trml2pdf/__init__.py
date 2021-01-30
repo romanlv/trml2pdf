@@ -16,3 +16,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 __version__ = "0.6"
+
+from . import doc
+
+def parseString(data: str, fout=None):
+    r = doc.RmlDoc(data.strip())
+    if fout:
+        fp = open(fout, "wb")
+        r.render(fp)
+        fp.close()
+        return fout
+    else:
+        import io
+        fp = io.BytesIO()
+        r.render(fp)
+        return fp.getvalue()

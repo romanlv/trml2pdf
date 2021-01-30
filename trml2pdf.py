@@ -10,7 +10,7 @@
 import os
 import sys
 
-from trml2pdf.doc import parse_string
+import trml2pdf
 
 __help = \
     "Usage: trml2pdf input.rml >output.pdf\n\
@@ -23,7 +23,7 @@ def main():
         sys.exit(0)
     else:
         # print(parseString(open(sys.argv[1], 'r').read()))
-        os.write(1, parse_string(open(sys.argv[1], 'rt').read()))
+        os.write(1, trml2pdf.parseString(open(sys.argv[1], 'rt').read()))
 
 
 if __name__ == "__main__":
