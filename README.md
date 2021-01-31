@@ -4,7 +4,7 @@ Open source implementation of RML (Report Markup Language) from ReportLab
 
 [RML User Guide](http://www.reportlab.com/docs/rml2pdf-userguide.pdf)  (or [beginner tutorial](http://www.reportlab.com/docs/rml-for-idiots.pdf))
 
-Not all tags are supported, but most of them work.
+Not all tags are implemented, but the main ones are. [List of implemented tags](https://github.com/romanlv/trml2pdf/blob/master/doc/Done.md)
  
 Install
 ------- 
@@ -34,6 +34,3 @@ context = Context(data)
 xmlstring = template.render(context)
 pdfstr = trml2pdf.parseString(xmlstring)
 ```
-
-# Looking for maintainer 
-I no longer use this library in my own projects, so there is no interest in adding new feature or improving things. If you are intersted in taking it over or being actively involved, please let me know
