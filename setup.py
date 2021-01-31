@@ -4,13 +4,12 @@
 import os
 from setuptools import setup, find_packages
 
-import trml2pdf
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='trml2pdf',
-    version=trml2pdf.__version__,
+    version='0.6',
     description='Tiny RML2PDF is open source implementation of RML (Report Markup Language) from ReportLab',
     keywords='pdf reportlab',
     platforms=["any"],
