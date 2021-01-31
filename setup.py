@@ -30,6 +30,7 @@ setup(
         ],
     },
     long_description=README,
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Plugins',
