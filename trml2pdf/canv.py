@@ -192,7 +192,7 @@ class RmlCanvas(object):
             if node.hasAttribute(tag):
                 drawargs[tag] = utils.unit_get(node.getAttribute(tag))
         if code_type == 'Code128':
-            for tag in ('barWidth', 'barHeight'):
+            for tag in ('barWidth', 'barHeight', 'quiet', 'lquiet', 'rquiet'):
                 if node.hasAttribute(tag):
                     createargs[tag] = utils.unit_get(node.getAttribute(tag))
             barcode = code128.Code128(self._textual(node), **createargs)
