@@ -67,6 +67,31 @@ class RmlCanvas(object):
         self.canvas.drawRightString(
             text=self._textual(node), **utils.attr_get(node, ['x', 'y']))
 
+    def _drawWrappedString(self, node):
+        text = self._textual(node)
+        if isinstance(text, bytes):
+            text = text.decode()
+        x = utils.unit_get(node.getAttribute('x'))
+        y = utils.unit_get(node.getAttribute('y'))
+        max_width = utils.unit_get(node.getAttribute('maxWidth'))
+        max_lines = int(node.getAttribute('maxLines'))
+        current_line = 1
+        while current_line <= max_lines:
+            tmp = text
+            width = self.canvas.stringWidth(tmp, self.canvas._fontname, self.canvas._fontsize)
+            while width > max_width:
+                # Chop off a word and try again
+                tmp = ' '.join(tmp.split()[:-1])
+                width = self.canvas.stringWidth(tmp, self.canvas._fontname, self.canvas._fontsize)
+            self.canvas.drawString(text=tmp, x=x, y=y)
+            # Remove the text we've just drawn from our string
+            text = ' '.join(text.split()[len(tmp.split()):])
+            # If we've run out of text, no more lines to draw
+            if not text:
+                break
+            y -= (self.canvas._fontsize * 1.2)  # Line space at 1.2 times font size
+            current_line += 1
+
     def _rect(self, node):
         if node.hasAttribute('round'):
             self.canvas.roundRect(radius=utils.unit_get(node.getAttribute(
@@ -319,6 +344,7 @@ class RmlCanvas(object):
             'drawCenteredString': self._drawCenteredString,
             'drawRightString': self._drawRightString,
             'drawString': self._drawString,
+            'drawWrappedString': self._drawWrappedString,
             'rect': self._rect,
             'ellipse': self._ellipse,
             'lines': self._lines,
