@@ -103,6 +103,12 @@ class RmlTemplate(object):
         self.doc = doc
         pts = node.getElementsByTagName('pageTemplate')
         for pt in pts:
+            if not pt.hasAttribute('pageSize'):
+                pageSize = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
+            else:
+                ps = [x.strip() for x in pt.getAttribute('pageSize').replace(')', '').replace(
+                     '(', '').split(',')]
+                pageSize = (utils.unit_get(ps[0]), utils.unit_get(ps[1]))
             frames = []
             for frame_el in pt.getElementsByTagName('frame'):
                 frame = platypus.Frame(**(utils.attr_get(
@@ -114,10 +120,10 @@ class RmlTemplate(object):
             if len(gr):
                 drw = canv.RmlDraw(gr[0], self.doc.styles)
                 self.page_templates.append(platypus.PageTemplate(
-                    frames=frames, onPage=drw.render, **utils.attr_get(pt, [], {'id': 'str'})))
+                    frames=frames, pagesize=pageSize, onPage=drw.render, **utils.attr_get(pt, [], {'id': 'str'})))
             else:
                 self.page_templates.append(
-                    platypus.PageTemplate(frames=frames, **utils.attr_get(pt, [], {'id': 'str'})))
+                    platypus.PageTemplate(frames=frames, pagesize=pageSize, **utils.attr_get(pt, [], {'id': 'str'})))
         self.doc_tmpl.addPageTemplates(self.page_templates)
 
     def render(self, node_story):
